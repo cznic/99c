@@ -192,7 +192,7 @@ func (t *task) main() error {
 					lpos = p
 				}
 				for _, v := range toks {
-					fmt.Fprintf(out, "%v ", cc.TokSrc(v))
+					fmt.Fprintf(out, "%v ", strings.TrimSpace(cc.TokSrc(v)))
 				}
 				fmt.Fprintln(out)
 			}),
