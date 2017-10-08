@@ -35,16 +35,22 @@
 //
 //	Usage of 99c:
 //	  -99lib
-//	    	Library link mode.
+//		Library link mode.
+//	  -Dname
+//		Equivalent to inserting '#define name 1' at the start of the
+//		translation unit.
+//	  -Dname=definition
+//		Equivalent to inserting '#define name definition' at the start of the
+//		translation unit.
 //	  -E	Copy C-language source files to standard output, executing all
 //	  	preprocessor directives; no compilation shall be performed. If any
 //	  	operand is not a text file, the effects are unspecified.
 //	  -c	Suppress the link-edit phase of the compilation, and do not
 //	  	remove any object files that are produced.
-//	  -o string
-//	    	Use the specified pathname, instead of the default a.out, for
-//	    	the executable file produced. If the -o option is present with
-//	    	-c or -E, the result is unspecified.
+//	  -o pathname
+//		Use the specified pathname, instead of the default a.out, for
+//		the executable file produced. If the -o option is present with
+//		-c or -E, the result is unspecified.
 //
 // Rest of the input is a list of file names, either C (.c) files or object
 // (.o) files.
@@ -483,8 +489,28 @@
 //	126
 //	$
 //
+// Inserting defines
+//
+// Use the -D flag to define additional macros on the command line.
+//
+//	$ cd examples/define/
+//	/home/jnml/src/github.com/cznic/99c/examples/define
+//	$ ls *
+//	main.c
+//	$ cat main.c
+//	#include <stdio.h>
+//
+//	int main() {
+//	#ifdef VERBOSE
+//		printf(GREETING);
+//	#endif
+//	}
+//	$ 99c -DVERBOSE -DGREETING=\"hello\\n\" main.c && ./a.out
+//	hello
+//	$ 99c -DGREETING=\"hello\\n\" main.c && ./a.out
+//	$
+//
 // TODOs
 //
-// Implement -I, -D options. However, they're not compatible with the Go stdlib
-// flag package.
+// Implement the -I option.
 package main

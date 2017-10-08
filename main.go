@@ -6,13 +6,13 @@ package main
 
 import (
 	"bufio"
-	"flag"
 	"fmt"
 	"go/token"
 	"os"
 	"path/filepath"
 	"runtime"
 	"runtime/debug"
+	"strings"
 
 	"github.com/cznic/cc"
 	"github.com/cznic/ccir"
@@ -23,6 +23,13 @@ import (
 
 var exitStatus = 1
 
+func exit(code int, msg string, arg ...interface{}) {
+	if msg != "" {
+		fmt.Fprintf(os.Stderr, os.Args[0]+": "+msg, arg...)
+	}
+	os.Exit(code)
+}
+
 func main() {
 	defer func() {
 		if err := recover(); err != nil {
@@ -32,26 +39,83 @@ func main() {
 	}()
 
 	t := newTask()
-	flag.BoolVar(&t.flags.E, "E", false, "Copy C-language source files to standard output, executing all preprocessor directives; no compilation shall be performed. If any operand is not a text file, the effects are unspecified.")
-	flag.BoolVar(&t.flags.c, "c", false, "Suppress the link-edit phase of the compilation, and do not remove any object files that are produced.")
-	flag.BoolVar(&t.flags.lib, "99lib", false, "Library link mode.")
-	flag.StringVar(&t.flags.o, "o", "", "Use the pathname outfile, instead of the default a.out, for the executable file produced. If the -o option is present with -c or -E, the result is unspecified.")
-	flag.Parse()
+	t.args.getopt(os.Args)
 	if err := t.main(); err != nil {
 		fmt.Fprintf(os.Stderr, "%v\n", err)
 	}
 }
 
-type flags struct {
-	E   bool   // -E
-	c   bool   // -c
-	lib bool   // -99lib
-	o   string // -o
+type args struct {
+	D    []string // -D
+	E    bool     // -E
+	args []string // Non flag arguments in order of appearance.
+	c    bool     // -c
+	lib  bool     // -99lib
+	o    string   // -o
+}
+
+func (a *args) getopt(args []string) {
+	args = args[1:]
+	for i, arg := range args {
+		switch {
+		case arg == "-99lib":
+			a.lib = true
+		case strings.HasPrefix(arg, "-D"):
+			if arg == "-D" {
+				break
+			}
+
+			arg = arg[2:]
+			p := strings.SplitN(arg, "=", 2)
+			if len(p) == 1 {
+				p = append(p, "1")
+			}
+			a.D = append(a.D, fmt.Sprintf("#define %s %s", p[0], p[1]))
+		case arg == "-E":
+			a.E = true
+		case arg == "-c":
+			a.c = true
+		case arg == "-o":
+			if i+1 >= len(args) {
+				exit(2, "missing -o argument")
+			}
+
+			a.o = args[i+1]
+			args[i+1] = ""
+		case strings.HasPrefix(arg, "-"):
+			s := ""
+			if arg != "-h" {
+				s = fmt.Sprintf("unknown flag: %s\n", arg)
+			}
+			exit(2, `%sUsage of 99c:
+  -99lib
+    	Library link mode.
+  -Dname
+	Equivalent to inserting '#define name 1' at the start of the
+	translation unit.
+  -Dname=definition
+	Equivalent to inserting '#define name definition' at the start of the
+	translation unit.
+  -E	Copy C-language source files to standard output, executing all
+  	preprocessor directives; no compilation shall be performed. If any
+  	operand is not a text file, the effects are unspecified.
+  -c	Suppress the link-edit phase of the compilation, and do not
+  	remove any object files that are produced.
+  -o pathname
+    	Use the specified pathname, instead of the default a.out, for
+    	the executable file produced. If the -o option is present with
+    	-c or -E, the result is unspecified.
+`, s)
+		default:
+			if arg != "" {
+				a.args = append(a.args, arg)
+			}
+		}
+	}
 }
 
 type task struct {
-	flags  flags
-	args   []string
+	args   args
 	cfiles []string
 	ofiles []string
 }
@@ -63,17 +127,16 @@ func fatalError(msg string, arg ...interface{}) error {
 func newTask() *task { return &task{} }
 
 func (t *task) main() error {
-	t.args = flag.Args()
-	if len(t.args) == 0 {
+	if len(t.args.args) == 0 {
 		return fatalError("no input files")
 	}
 
-	if t.flags.o != "" && (t.flags.c || t.flags.E) && len(t.args) > 1 {
+	if t.args.o != "" && (t.args.c || t.args.E) && len(t.args.args) > 1 {
 		exitStatus = 2
 		return fatalError("cannot specify -o with -c or -E with multiple files")
 	}
 
-	for _, arg := range t.args {
+	for _, arg := range t.args.args {
 		switch filepath.Ext(arg) {
 		case ".c":
 			t.cfiles = append(t.cfiles, arg)
@@ -85,14 +148,14 @@ func (t *task) main() error {
 	}
 
 	switch {
-	case t.flags.E:
+	case t.args.E:
 		model, err := ccir.NewModel()
 		if err != nil {
 			fatalError("%v", err)
 		}
 
 		o := os.Stdout
-		if fn := t.flags.o; fn != "" {
+		if fn := t.args.o; fn != "" {
 			if o, err = os.Create(fn); err != nil {
 				fatalError("%v\n", err)
 			}
@@ -104,11 +167,12 @@ func (t *task) main() error {
 		var lpos token.Position
 		_, err = cc.Parse(
 			fmt.Sprintf(`
+%s
 #define __arch__ %s
 #define __os__ %s
 #include <builtin.h>
-`, runtime.GOARCH, runtime.GOOS),
-			append(t.cfiles, ccir.CRT0Path),
+`, strings.Join(t.args.D, "\n"), runtime.GOARCH, runtime.GOOS),
+			t.cfiles,
 			model,
 			cc.SysIncludePaths([]string{ccir.LibcIncludePath}),
 			cc.AllowCompatibleTypedefRedefinitions(),
@@ -146,7 +210,7 @@ func (t *task) main() error {
 	}
 
 	switch {
-	case t.flags.c:
+	case t.args.c:
 		for _, arg := range t.cfiles {
 			model, err := ccir.NewModel()
 			if err != nil {
@@ -155,10 +219,11 @@ func (t *task) main() error {
 
 			tu, err := cc.Parse(
 				fmt.Sprintf(`
+%s
 #define __arch__ %s
 #define __os__ %s
 #include <builtin.h>
-`, runtime.GOARCH, runtime.GOOS),
+`, strings.Join(t.args.D, "\n"), runtime.GOARCH, runtime.GOOS),
 				[]string{arg},
 				model,
 				cc.SysIncludePaths([]string{ccir.LibcIncludePath}),
@@ -201,10 +266,11 @@ func (t *task) main() error {
 
 		tu, err := cc.Parse(
 			fmt.Sprintf(`
+%s
 #define __arch__ %s
 #define __os__ %s
 #include <builtin.h>
-`, runtime.GOARCH, runtime.GOOS),
+`, strings.Join(t.args.D, "\n"), runtime.GOARCH, runtime.GOOS),
 			append(t.cfiles, ccir.CRT0Path),
 			model,
 			cc.SysIncludePaths([]string{ccir.LibcIncludePath}),
@@ -221,7 +287,7 @@ func (t *task) main() error {
 
 		var out []ir.Object
 		switch {
-		case t.flags.lib:
+		case t.args.lib:
 			out, err = ir.LinkLib(append(obj, o)...)
 		default:
 			out, err = ir.LinkMain(append(obj, o)...)
@@ -235,7 +301,7 @@ func (t *task) main() error {
 			return err
 		}
 
-		fn := t.flags.o
+		fn := t.args.o
 		if fn == "" {
 			fn = "a.out"
 		}
