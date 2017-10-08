@@ -48,7 +48,7 @@ Output of 99c -h
        -Olevel
                 Optimization setting, ignored.
        -Wwarn
-                Warinig level, ignored.
+                Warnig level, ignored.
        -c       Suppress the link-edit phase of the compilation, and do not
                 remove any object files that are produced.
        -g       Produce debug information, ignored.
