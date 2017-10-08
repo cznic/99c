@@ -510,7 +510,34 @@
 //	$ 99c -DGREETING=\"hello\\n\" main.c && ./a.out
 //	$
 //
-// TODOs
+// Specifying include paths
 //
-// Implement the -I option.
+// The -I flag defines additional include files search path(s).
+//
+//	$ cd examples/include/
+//	/home/jnml/src/github.com/cznic/99c/examples/include
+//	$ ls *
+//	main.c
+//
+//	foo:
+//	main.h
+//	$ cat main.c
+//	#include <stdio.h>
+//	#include "main.h"
+//
+//	int main() {
+//		printf(HELLO);
+//	}
+//	$ cat foo/main.h
+//	#ifndef _MAIN_H_
+//	#define _MAIN_H_
+//
+//	#define HELLO "hello\n"
+//
+//	#endif
+//	$ 99c main.c && ./a.out
+//	99c: main.c:2:10: include file not found: main.h (and 2 more errors)
+//	$ 99c -Ifoo main.c && ./a.out
+//	hello
+//	$
 package main

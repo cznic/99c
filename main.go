@@ -21,8 +21,6 @@ import (
 	"github.com/cznic/xc"
 )
 
-var exitStatus = 1
-
 func exit(code int, msg string, arg ...interface{}) {
 	if msg != "" {
 		fmt.Fprintf(os.Stderr, os.Args[0]+": "+msg, arg...)
@@ -33,21 +31,21 @@ func exit(code int, msg string, arg ...interface{}) {
 func main() {
 	defer func() {
 		if err := recover(); err != nil {
-			fmt.Fprintf(os.Stderr, "PANIC: %v\n%s\n", err, debug.Stack())
-			os.Exit(exitStatus)
+			exit(1, "PANIC: %v\n%s\n", err, debug.Stack())
 		}
 	}()
 
 	t := newTask()
 	t.args.getopt(os.Args)
 	if err := t.main(); err != nil {
-		fmt.Fprintf(os.Stderr, "%v\n", err)
+		exit(1, "%v\n", err)
 	}
 }
 
 type args struct {
 	D    []string // -D
 	E    bool     // -E
+	I    []string // -I
 	args []string // Non flag arguments in order of appearance.
 	c    bool     // -c
 	lib  bool     // -99lib
@@ -73,6 +71,13 @@ func (a *args) getopt(args []string) {
 			a.D = append(a.D, fmt.Sprintf("#define %s %s", p[0], p[1]))
 		case arg == "-E":
 			a.E = true
+		case strings.HasPrefix(arg, "-I"):
+			if arg == "-I" {
+				break
+			}
+
+			arg = arg[2:]
+			a.I = append(a.I, arg)
 		case arg == "-c":
 			a.c = true
 		case arg == "-o":
@@ -132,8 +137,7 @@ func (t *task) main() error {
 	}
 
 	if t.args.o != "" && (t.args.c || t.args.E) && len(t.args.args) > 1 {
-		exitStatus = 2
-		return fatalError("cannot specify -o with -c or -E with multiple files")
+		exit(2, "cannot specify -o with -c or -E with multiple files")
 	}
 
 	for _, arg := range t.args.args {
@@ -174,6 +178,7 @@ func (t *task) main() error {
 `, strings.Join(t.args.D, "\n"), runtime.GOARCH, runtime.GOOS),
 			t.cfiles,
 			model,
+			cc.IncludePaths(t.args.I),
 			cc.SysIncludePaths([]string{ccir.LibcIncludePath}),
 			cc.AllowCompatibleTypedefRedefinitions(),
 			cc.Cpp(func(toks []xc.Token) {
@@ -226,6 +231,7 @@ func (t *task) main() error {
 `, strings.Join(t.args.D, "\n"), runtime.GOARCH, runtime.GOOS),
 				[]string{arg},
 				model,
+				cc.IncludePaths(t.args.I),
 				cc.SysIncludePaths([]string{ccir.LibcIncludePath}),
 				cc.AllowCompatibleTypedefRedefinitions(),
 			)
@@ -273,6 +279,7 @@ func (t *task) main() error {
 `, strings.Join(t.args.D, "\n"), runtime.GOARCH, runtime.GOOS),
 			append(t.cfiles, ccir.CRT0Path),
 			model,
+			cc.IncludePaths(t.args.I),
 			cc.SysIncludePaths([]string{ccir.LibcIncludePath}),
 			cc.AllowCompatibleTypedefRedefinitions(),
 		)
