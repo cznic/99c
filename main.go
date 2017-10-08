@@ -46,8 +46,11 @@ type args struct {
 	D    []string // -D
 	E    bool     // -E
 	I    []string // -I
+	O    string   // -O
+	W    string   // -W
 	args []string // Non flag arguments in order of appearance.
 	c    bool     // -c
+	g    bool     // -g
 	lib  bool     // -99lib
 	o    string   // -o
 }
@@ -78,8 +81,14 @@ func (a *args) getopt(args []string) {
 
 			arg = arg[2:]
 			a.I = append(a.I, arg)
+		case strings.HasPrefix(arg, "-O"):
+			a.O = arg[2:]
+		case strings.HasPrefix(arg, "-W"):
+			a.W = arg[2:]
 		case arg == "-c":
 			a.c = true
+		case arg == "-g":
+			a.g = true
 		case arg == "-o":
 			if i+1 >= len(args) {
 				exit(2, "missing -o argument")
@@ -106,8 +115,13 @@ func (a *args) getopt(args []string) {
   	operand is not a text file, the effects are unspecified.
   -Ipath
 	Add path to the include files search paths.
+  -Olevel
+	Optimization setting, ignored.
+  -Wwarn
+	Warning level, ignored.
   -c	Suppress the link-edit phase of the compilation, and do not
   	remove any object files that are produced.
+  -g	Produce debugging information, ignored.
   -o pathname
     	Use the specified pathname, instead of the default a.out, for
     	the executable file produced. If the -o option is present with

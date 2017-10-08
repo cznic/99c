@@ -47,8 +47,13 @@
 //	  	operand is not a text file, the effects are unspecified.
 //	  -Ipath
 //		Add path to the include files search paths.
+//	  -Olevel
+//		Optimization setting, ignored.
+//	  -Wwarn
+//		Warning level, ignored.
 //	  -c	Suppress the link-edit phase of the compilation, and do not
 //	  	remove any object files that are produced.
+//	  -f	Produce debug information, ignored.
 //	  -o pathname
 //		Use the specified pathname, instead of the default a.out, for
 //		the executable file produced. If the -o option is present with
