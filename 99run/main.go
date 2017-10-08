@@ -22,7 +22,7 @@ func exit(code int, msg string, arg ...interface{}) {
 
 func main() {
 	if len(os.Args) < 2 {
-		exit(2, "invalid arguments %v", os.Args)
+		exit(2, "invalid arguments %v\n", os.Args)
 	}
 
 	bin, err := os.Open(os.Args[1])
