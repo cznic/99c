@@ -153,7 +153,7 @@ A translation unit may consist of multiple source files.
 
 ### Using object files
 
-Use -c to output object files. (POSIX otion)
+Use -c to output object files. (POSIX option)
 
      $ cd examples/multifile/
      /home/jnml/src/github.com/cznic/99c/examples/multifile
