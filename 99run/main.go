@@ -15,7 +15,7 @@ import (
 
 func exit(code int, msg string, arg ...interface{}) {
 	if msg != "" {
-		fmt.Fprintf(os.Stderr, msg, arg...)
+		fmt.Fprintf(os.Stderr, os.Args[0]+": "+msg, arg...)
 	}
 	os.Exit(code)
 }
