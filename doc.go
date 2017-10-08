@@ -45,6 +45,8 @@
 //	  -E	Copy C-language source files to standard output, executing all
 //	  	preprocessor directives; no compilation shall be performed. If any
 //	  	operand is not a text file, the effects are unspecified.
+//	  -Ipath
+//		Add path to the include files search paths.
 //	  -c	Suppress the link-edit phase of the compilation, and do not
 //	  	remove any object files that are produced.
 //	  -o pathname

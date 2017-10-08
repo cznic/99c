@@ -33,22 +33,24 @@ Output of 99c -h
 
      Usage of 99c:
        -99lib
-         	Library link mode.
+                Library link mode.
        -Dname
                 Equivalent to inserting '#define name 1' at the start of the
                 translation unit.
        -Dname=definition
-		Equivalent to inserting '#define name definition' at the start
+                Equivalent to inserting '#define name definition' at the start
                 of the translation unit.
-       -E	Copy C-language source files to standard output, executing all
-       	preprocessor directives; no compilation shall be performed. If any
-       	operand is not a text file, the effects are unspecified.
-       -c	Suppress the link-edit phase of the compilation, and do not
-       	remove any object files that are produced.
+       -E       Copy C-language source files to standard output, executing all
+                preprocessor directives; no compilation shall be performed. If
+                any operand is not a text file, the effects are unspecified.
+       -Ipath
+                Add path to the include files search paths.
+       -c       Suppress the link-edit phase of the compilation, and do not
+                remove any object files that are produced.
        -o pathname
-         	Use the specified pathname, instead of the default a.out, for
-         	the executable file produced. If the -o option is present with
-         	-c or -E, the result is unspecified.
+                Use the specified pathname, instead of the default a.out, for
+                the executable file produced. If the -o option is present with
+                -c or -E, the result is unspecified.
 
 Rest of the input is a list of file names, either C (.c) files or object
 (.o) files.
