@@ -153,8 +153,13 @@ func (a *args) getopt(args []string) {
 			a.W = arg[2:]
 		case arg == "-c":
 			a.c = true
-		case arg == "-x":
-			a.opts = append(a.opts, a.extra(arg[2:]))
+		case arg == "-99extra":
+			if i+1 >= len(args) {
+				exit(2, "missing -99flag argument")
+			}
+
+			a.opts = append(a.opts, a.extra(args[i+1]))
+			args[i+1] = ""
 		case arg == "-g":
 			a.g = true
 		case arg == "-o":
