@@ -3,6 +3,10 @@
 // license that can be found in the LICENSE file.
 
 // Command 99run executes binary programs produced by the 99c compiler.
+//
+// Usage
+//
+//	99run a.out [arguments]
 package main
 
 import (
