@@ -53,6 +53,72 @@ type args struct {
 	g    bool     // -g
 	lib  bool     // -99lib
 	o    string   // -o
+	opts []cc.Opt // cc flags
+}
+
+func (a *args) extra(name string) cc.Opt {
+	switch name {
+	case "AlignOf":
+		return cc.EnableAlignOf()
+	case "AlternateKeywords":
+		return cc.EnableAlternateKeywords()
+	case "AnonymousStructFields":
+		return cc.EnableAnonymousStructFields()
+	case "Asm":
+		return cc.EnableAsm()
+	case "BuiltinClassifyType":
+		return cc.EnableBuiltinClassifyType()
+	case "BuiltinConstantP":
+		return cc.EnableBuiltinConstantP()
+	case "ComputedGotos":
+		return cc.EnableComputedGotos()
+	case "DefineOmitCommaBeforeDDD":
+		return cc.EnableDefineOmitCommaBeforeDDD()
+	case "DlrInIdentifiers":
+		return cc.EnableDlrInIdentifiers()
+	case "EmptyDeclarations":
+		return cc.EnableEmptyDeclarations()
+	case "EmptyDefine":
+		return cc.EnableEmptyDefine()
+	case "EmptyStructs":
+		return cc.EnableEmptyStructs()
+	case "ImaginarySuffix":
+		return cc.EnableImaginarySuffix()
+	case "ImplicitFuncDef":
+		return cc.EnableImplicitFuncDef()
+	case "ImplicitIntType":
+		return cc.EnableImplicitIntType()
+	case "IncludeNext":
+		return cc.EnableIncludeNext()
+	case "LegacyDesignators":
+		return cc.EnableLegacyDesignators()
+	case "NonConstStaticInitExpressions":
+		return cc.EnableNonConstStaticInitExpressions()
+	case "Noreturn":
+		return cc.EnableNoreturn()
+	case "OmitConditionalOperand":
+		return cc.EnableOmitConditionalOperand()
+	case "OmitFuncArgTypes":
+		return cc.EnableOmitFuncArgTypes()
+	case "OmitFuncRetType":
+		return cc.EnableOmitFuncRetType()
+	case "ParenthesizedCompoundStatemen":
+		return cc.EnableParenthesizedCompoundStatemen()
+	case "StaticAssert":
+		return cc.EnableStaticAssert()
+	case "TypeOf":
+		return cc.EnableTypeOf()
+	case "UndefExtraTokens":
+		return cc.EnableUndefExtraTokens()
+	case "UnsignedEnums":
+		return cc.EnableUnsignedEnums()
+	case "WideBitFieldTypes":
+		return cc.EnableWideBitFieldTypes()
+	case "WideEnumValues":
+		return cc.EnableWideEnumValues()
+	}
+	exit(2, "unknown -x argument")
+	return nil
 }
 
 func (a *args) getopt(args []string) {
@@ -87,6 +153,8 @@ func (a *args) getopt(args []string) {
 			a.W = arg[2:]
 		case arg == "-c":
 			a.c = true
+		case arg == "-x":
+			a.opts = append(a.opts, a.extra(arg[2:]))
 		case arg == "-g":
 			a.g = true
 		case arg == "-o":
@@ -126,6 +194,37 @@ func (a *args) getopt(args []string) {
     	Use the specified pathname, instead of the default a.out, for
     	the executable file produced. If the -o option is present with
     	-c or -E, the result is unspecified.
+  -xEXTRA
+    Extra cc flags:
+      AlignOf
+      AlternateKeywords
+      AnonymousStructFields
+      Asm
+      BuiltinClassifyType
+      BuiltinConstantP
+      ComputedGotos
+      DefineOmitCommaBeforeDDD
+      DlrInIdentifiers
+      EmptyDeclarations
+      EmptyDefine
+      EmptyStructs
+      ImaginarySuffix
+      ImplicitFuncDef
+      ImplicitIntType
+      IncludeNext
+      LegacyDesignators
+      NonConstStaticInitExpressions
+      Noreturn
+      OmitConditionalOperand
+      OmitFuncArgTypes
+      OmitFuncRetType
+      ParenthesizedCompoundStatemen
+      StaticAssert
+      TypeOf
+      UndefExtraTokens
+      UnsignedEnums
+      WideBitFieldTypes
+      WideEnumValues
 `, s)
 		default:
 			if arg != "" {
@@ -185,15 +284,7 @@ func (t *task) main() error {
 		defer out.Flush()
 
 		var lpos token.Position
-		_, err = cc.Parse(
-			fmt.Sprintf(`
-%s
-#define __arch__ %s
-#define __os__ %s
-#include <builtin.h>
-`, strings.Join(t.args.D, "\n"), runtime.GOARCH, runtime.GOOS),
-			t.cfiles,
-			model,
+		opts := []cc.Opt{
 			cc.IncludePaths(t.args.I),
 			cc.SysIncludePaths([]string{ccir.LibcIncludePath}),
 			cc.AllowCompatibleTypedefRedefinitions(),
@@ -210,6 +301,19 @@ func (t *task) main() error {
 				}
 				fmt.Fprintln(out)
 			}),
+		}
+		opts = append(opts, t.args.opts...)
+
+		_, err = cc.Parse(
+			fmt.Sprintf(`
+%s
+#define __arch__ %s
+#define __os__ %s
+#include <builtin.h>
+`, strings.Join(t.args.D, "\n"), runtime.GOARCH, runtime.GOOS),
+			t.cfiles,
+			model,
+			opts...,
 		)
 		return err
 	}
@@ -238,6 +342,13 @@ func (t *task) main() error {
 				fatalError("%v", err)
 			}
 
+			opts := []cc.Opt{
+				cc.IncludePaths(t.args.I),
+				cc.SysIncludePaths([]string{ccir.LibcIncludePath}),
+				cc.AllowCompatibleTypedefRedefinitions(),
+			}
+			opts = append(opts, t.args.opts...)
+
 			tu, err := cc.Parse(
 				fmt.Sprintf(`
 %s
@@ -247,9 +358,7 @@ func (t *task) main() error {
 `, strings.Join(t.args.D, "\n"), runtime.GOARCH, runtime.GOOS),
 				[]string{arg},
 				model,
-				cc.IncludePaths(t.args.I),
-				cc.SysIncludePaths([]string{ccir.LibcIncludePath}),
-				cc.AllowCompatibleTypedefRedefinitions(),
+				opts...,
 			)
 			if err != nil {
 				return err
@@ -286,6 +395,13 @@ func (t *task) main() error {
 			fatalError("%v", err)
 		}
 
+		opts := []cc.Opt{
+			cc.IncludePaths(t.args.I),
+			cc.SysIncludePaths([]string{ccir.LibcIncludePath}),
+			cc.AllowCompatibleTypedefRedefinitions(),
+		}
+		opts = append(opts, t.args.opts...)
+
 		tu, err := cc.Parse(
 			fmt.Sprintf(`
 %s
@@ -295,9 +411,7 @@ func (t *task) main() error {
 `, strings.Join(t.args.D, "\n"), runtime.GOARCH, runtime.GOOS),
 			append(t.cfiles, ccir.CRT0Path),
 			model,
-			cc.IncludePaths(t.args.I),
-			cc.SysIncludePaths([]string{ccir.LibcIncludePath}),
-			cc.AllowCompatibleTypedefRedefinitions(),
+			opts...,
 		)
 		if err != nil {
 			return err
