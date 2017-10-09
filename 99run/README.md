@@ -1,16 +1,18 @@
 # Table of Contents
 
-1. Changelog
+1. Usage
 1. Installation
-1. Executing compiled programs
+1. Changelog
 
 # 99run
 
 Command 99run executes binary programs produced by the 99c compiler.
 
-### Changelog
+### Usage
 
-2017-01-07: Initial public release.
+    99run a.out
+
+On Linux a.out can be executed directly.
 
 ### Installation
 
@@ -20,16 +22,6 @@ To install or update 99run
 
 Online documentation: [godoc.org/github.com/cznic/99c/99run](http://godoc.org/github.com/cznic/99c/99run)
 
-### Executing compiled programs
+### Changelog
 
-Running a binary on Linux
-
-     $ ./a.out
-     hello world
-     $
-
-Running a binary on Windows
-
-     C:\> 99run a.out
-     hello world
-     C:\>
+2017-10-07: Initial public release.

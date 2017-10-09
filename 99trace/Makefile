@@ -35,9 +35,7 @@ editor:
 	gofmt -l -s -w *.go
 	go test -i
 	go test 2>&1 | tee log
-	go install 
-	go install ./99run
-	go install -tags virtual.trace ./99trace
+	go install -tags virtual.trace
 
 internalError:
 	egrep -ho '"internal error.*"' *.go | sort | cat -n

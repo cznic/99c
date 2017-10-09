@@ -4,32 +4,7 @@
 
 // Command 99c is a c99 compiler targeting a virtual machine.
 //
-// Changelog
-//
-// 2017-01-07: Initial public release.
-//
-// Installation
-//
-// To install or update the compiler and the virtual machine
-//
-//	$ go get [-u] github.com/cznic/99c github.com/cznic/99c/99run
-//
-// Online documentation: http://godoc.org/github.com/cznic/99c
-//
-// Supported platforms and operating systems
-//
-// See: https://godoc.org/github.com/cznic/ccir#hdr-Supported_platforms_and_architectures
-//
-// At the time of this writing, in GOOS_GOARCH form
-//
-//	linux_386
-//	linux_amd64
-//	windows_386
-//	windows_amd64
-//
-// Porting to other platforms/architectures is considered not difficult.
-//
-// Options
+// Usage
 //
 // Output of 99c -h
 //
@@ -61,6 +36,34 @@
 //
 // Rest of the input is a list of file names, either C (.c) files or object
 // (.o) files.
+//
+// Installation
+//
+// To install or update the compiler and the virtual machine
+//
+//	$ go get [-u] github.com/cznic/99c github.com/cznic/99c/99run
+//
+// Online documentation: http://godoc.org/github.com/cznic/99c
+//
+// Changelog
+//
+// 2017-10-07: Initial public release.
+//
+// Supported platforms and operating systems
+//
+// See: https://godoc.org/github.com/cznic/ccir#hdr-Supported_platforms_and_architectures
+//
+// At the time of this writing, in GOOS_GOARCH form
+//
+//	linux_386
+//	linux_amd64
+//	windows_386
+//	windows_amd64
+//
+// Porting to other platforms/architectures is considered not difficult.
+//
+// Options
+//
 //
 // Project status
 //

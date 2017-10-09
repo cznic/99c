@@ -1,10 +1,10 @@
 # Table of Contents
 
 1. [99c](#99c)
-     1. Changelog
+     1. Usage
      1. Installation
+     1. Changelog
      1. Supported platforms and operating systems
-     1. Options
      1. Project status
      1. Executing compiled programs
      1. Compiling a simple program
@@ -20,40 +20,20 @@
      1. Inserting defines
      1. Specifying include paths
 1. [99run](#99run)
-     1. Changelog
+     1. Usage
      1. Installation
-     1. Executing compiled programs
+     1. Changelog
+1. [99trace](#99trace)
+     1. Usage
+     1. Installation
+     1. Changelog
+     1. Sample
 
 # 99c
 
 Command 99c is a c99 compiler targeting a virtual machine.
 
-### Changelog
-
-2017-01-07: Initial public release.
-
-### Installation
-
-To install or update the compiler and the virtual machine
-
-     $ go get [-u] github.com/cznic/99c github.com/cznic/99c/99run
-
-Online documentation: [godoc.org/github.com/cznic/99c](http://godoc.org/github.com/cznic/99c)
-
-### Supported platforms and operating systems
-
-See: https://godoc.org/github.com/cznic/ccir#hdr-Supported_platforms_and_architectures
-
-At the time of this writing, in GOOS_GOARCH form
-
-     linux_386
-     linux_amd64
-     windows_386
-     windows_amd64
-
-Porting to other platforms/architectures is considered not difficult.
-
-### Options
+### Usage
 
 Output of 99c -h
 
@@ -83,8 +63,32 @@ Output of 99c -h
                 the executable file produced. If the -o option is present with
                 -c or -E, the result is unspecified.
 
-Rest of the input is a list of file names, either C (.c) files or object
-(.o) files.
+Rest of the input is a list of file names, either C (.c) files or object (.o) files.
+
+### Installation
+
+To install or update the compiler and the virtual machine
+
+     $ go get [-u] github.com/cznic/99c github.com/cznic/99c/99run
+
+Online documentation: [godoc.org/github.com/cznic/99c](http://godoc.org/github.com/cznic/99c)
+
+### Changelog
+
+2017-10-07: Initial public release.
+
+### Supported platforms and operating systems
+
+See: https://godoc.org/github.com/cznic/ccir#hdr-Supported_platforms_and_architectures
+
+At the time of this writing, in GOOS_GOARCH form
+
+     linux_386
+     linux_amd64
+     windows_386
+     windows_amd64
+
+Porting to other platforms/architectures is considered not difficult.
 
 ### Project status
 
@@ -577,9 +581,11 @@ The -I flag defines additional include files search path(s).
 
 Command 99run executes binary programs produced by the 99c compiler.
 
-### Changelog
+### Usage
 
-2017-01-07: Initial public release.
+    $ 99run a.out
+
+On Linux a.out can be executed directly.
 
 ### Installation
 
@@ -589,16 +595,62 @@ To install or update 99run
 
 Online documentation: [godoc.org/github.com/cznic/99c/99run](http://godoc.org/github.com/cznic/99c/99run)
 
-### Executing compiled programs
+### Changelog
 
-Running a binary on Linux
+2017-10-07: Initial public release.
 
-     $ ./a.out
-     hello world
-     $
+# 99trace
 
-Running a binary on Windows
+Command 99trace traces execution of binary programs produced by the 99c compiler.
 
-     C:\> 99run a.out
-     hello world
-     C:\>
+The trace is written to stderr.
+
+### Usage
+
+    99trace a.out [arguments]
+
+### Installation
+
+To install or update 99trace
+
+     $ go get [-u] -tags virtual.trace github.com/cznic/99c/99trace
+
+Online documentation: [godoc.org/github.com/cznic/99c/99trace](http://godoc.org/github.com/cznic/99c/99trace)
+
+### Changelog
+
+2017-10-09: Initial public release.
+
+### Sample
+
+    $ cd examples/hello/
+    /home/jnml/src/github.com/cznic/99c/examples/hello
+    $ 99c hello.c && 99trace a.out 2>log
+    hello world
+    $ cat log
+    # _start
+    0x00002	func	; /home/jnml/src/github.com/cznic/ccir/libc/crt0.c:13:1
+    0x00003		arguments      		; /home/jnml/src/github.com/cznic/ccir/libc/crt0.c:14:1
+    0x00004		push64         (ds)	; /home/jnml/src/github.com/cznic/ccir/libc/crt0.c:14:1
+    0x00005		push64         (ds+0x10); /home/jnml/src/github.com/cznic/ccir/libc/crt0.c:14:1
+    0x00006		push64         (ds+0x20); /home/jnml/src/github.com/cznic/ccir/libc/crt0.c:14:1
+    0x00007		#register_stdfiles	; /home/jnml/src/github.com/cznic/ccir/libc/crt0.c:14:1
+    0x00008		arguments      		; /home/jnml/src/github.com/cznic/ccir/libc/crt0.c:15:1
+    0x00009		sub            sp, 0x8	; /home/jnml/src/github.com/cznic/ccir/libc/crt0.c:15:1
+    0x0000a		arguments      		; /home/jnml/src/github.com/cznic/ccir/libc/crt0.c:15:1
+    0x0000b		push32         (ap-0x8)	; /home/jnml/src/github.com/cznic/ccir/libc/crt0.c:15:1
+    0x0000c		push64         (ap-0x10); /home/jnml/src/github.com/cznic/ccir/libc/crt0.c:15:1
+    0x0000d		call           0x16	; /home/jnml/src/github.com/cznic/ccir/libc/crt0.c:15:1
+    # main
+    0x00016	func	; hello.c:3:1
+    0x00017		push           ap	; hello.c:3:1
+    0x00018		zero32         		; hello.c:3:1
+    0x00019		store32        		; hello.c:3:1
+    0x0001a		arguments      		; hello.c:3:1
+    0x0001b		push           ts+0x0	; hello.c:4:1
+    0x0001c		#printf        		; hello.c:4:1
+    0x0001d		return         		; hello.c:4:1
+    
+    0x0000e	#exit          	; /home/jnml/src/github.com/cznic/ccir/libc/crt0.c:15:1
+    
+    $ 

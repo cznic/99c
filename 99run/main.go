@@ -6,7 +6,21 @@
 //
 // Usage
 //
+// To execute a compiled binary named a.out
+//
 //	99run a.out [arguments]
+// 
+// Installation
+// 
+// To install or update
+// 
+//      $ go get [-u] github.com/cznic/99c/99run
+// 
+// Online documentation: [godoc.org/github.com/cznic/99c/99run](http://godoc.org/github.com/cznic/99c/99run)
+// 
+// Changelog
+// 
+// 2017-01-07: Initial public release.
 package main
 
 import (
