@@ -1,4 +1,30 @@
-### 99c
+# Table of Contents
+
+1. [99c](#99c)
+     1. Changelog
+     1. Installation
+     1. Supported platforms and operating systems
+     1. Options
+     1. Project status
+     1. Executing compiled programs
+     1. Compiling a simple program
+     1. Setting the output file name
+     1. Obtaining the preprocessor output
+     1. Multiple C files projects
+     1. Using object files
+     1. Stack traces
+     1. Argument passing
+     1. Executing a C program embedded in a Go program
+     1. Calling into an embedded C library from Go
+     1. Loading C plugins at run-time
+     1. Inserting defines
+     1. Specifying include paths
+1. [99run](#99run)
+     1. Changelog
+     1. Installation
+     1. Executing compiled programs
+
+# 99c
 
 Command 99c is a c99 compiler targeting a virtual machine.
 
@@ -83,7 +109,7 @@ Running a binary on Windows
      hello world
      C:\>
 
-### A simple program
+### Compiling a simple program
 
 All in just a single C file.
 
@@ -546,3 +572,33 @@ The -I flag defines additional include files search path(s).
      $ 99c -Ifoo main.c && ./a.out
      hello
      $
+
+# 99run
+
+Command 99run executes binary programs produced by the 99c compiler.
+
+### Changelog
+
+2017-01-07: Initial public release.
+
+### Installation
+
+To install or update 99run
+
+     $ go get [-u] github.com/cznic/99c/99run
+
+Online documentation: [godoc.org/github.com/cznic/99c/99run](http://godoc.org/github.com/cznic/99c/99run)
+
+### Executing compiled programs
+
+Running a binary on Linux
+
+     $ ./a.out
+     hello world
+     $
+
+Running a binary on Windows
+
+     C:\> 99run a.out
+     hello world
+     C:\>
