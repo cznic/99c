@@ -1,9 +1,8 @@
 # Table of Contents
 
-1. [99run](#99run)
-     1. Changelog
-     1. Installation
-     1. Executing compiled programs
+1. Changelog
+1. Installation
+1. Executing compiled programs
 
 # 99run
 
