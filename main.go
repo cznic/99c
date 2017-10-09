@@ -155,7 +155,7 @@ func (a *args) getopt(args []string) {
 			a.c = true
 		case arg == "-99extra":
 			if i+1 >= len(args) {
-				exit(2, "missing -99flag argument")
+				exit(2, "missing -99extra argument")
 			}
 
 			a.opts = append(a.opts, a.extra(args[i+1]))
@@ -199,7 +199,7 @@ func (a *args) getopt(args []string) {
     	Use the specified pathname, instead of the default a.out, for
     	the executable file produced. If the -o option is present with
     	-c or -E, the result is unspecified.
-  -xEXTRA
+  -99extra flag
     Extra cc flags:
       AlignOf
       AlternateKeywords
