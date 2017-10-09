@@ -29,7 +29,7 @@ Online documentation: [godoc.org/github.com/cznic/99c/99strace](http://godoc.org
 
 ### Sample
 
-    $ cd ../example/strace/
+    $ cd ../examples/strace/
     $ ls *
     data.txt  main.c
     $ cat main.c 

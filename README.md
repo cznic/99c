@@ -689,8 +689,8 @@ Online documentation: [godoc.org/github.com/cznic/99c/99strace](http://godoc.org
 
 ### Sample
 
-    $ cd example/strace/
-    /home/jnml/src/github.com/cznic/99c/example/strace
+    $ cd examples/strace/
+    /home/jnml/src/github.com/cznic/99c/examples/strace
     $ ls *
     data.txt  main.c
     $ cat main.c 

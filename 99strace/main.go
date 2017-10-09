@@ -28,7 +28,7 @@
 //
 // Example session
 //
-//     $ cd ../example/strace/
+//     $ cd ../examples/strace/
 //     $ ls *
 //     data.txt  main.c
 //     $ cat main.c
