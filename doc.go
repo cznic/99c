@@ -153,31 +153,31 @@
 //
 // Use -E to produce the cpp results. (POSIX option)
 //
-//	$ cd examples/hello/
-//	/home/jnml/src/github.com/cznic/99c/examples/hello
-//	$ 99c -E hello.c
-//	# 24 "/home/jnml/src/github.com/cznic/ccir/libc/predefined.h"
-//	typedef   char   * __builtin_va_list ;
-//	# 41 "/home/jnml/src/github.com/cznic/ccir/libc/builtin.h"
-//	typedef   __builtin_va_list   __gnuc_va_list ;
-//	...
-//	extern   void   flockfile ( FILE   *   __stream ) ;
-//	extern   int   ftrylockfile ( FILE   *   __stream ) ;
-//	extern   void   funlockfile ( FILE   *   __stream ) ;
-//	# 5 "hello.c"
-//	int   main ( )   {
-//	printf ( "hello world\n" ) ;
-//	}
-//	# 7 "/home/jnml/src/github.com/cznic/ccir/libc/crt0.c"
-//	int   main ( ) ;
-//	__FILE_TYPE__   __stdfiles [ 3 ] ;
-//	void   * stdin   =   & __stdfiles [ 0 ] ,   * stdout   =   & __stdfiles [ 1 ] ,   * stderr   =   & __stdfiles [ 2 ] ;
-//	void   _start ( int   argc ,   char   * * argv )
-//	{
-//	__register_stdfiles ( stdin ,   stdout ,   stderr ) ;
-//	__builtin_exit ( ( ( int   ( * ) ( ) ) main )   ( argc ,   argv ) ) ;
-//	}
-//	$
+//     $ cd examples/hello/
+//     /home/jnml/src/github.com/cznic/99c/examples/hello
+//     $ 99c -E hello.c
+//     # 24 "/home/jnml/src/github.com/cznic/ccir/libc/predefined.h"
+//     typedef char * __builtin_va_list ;
+//     # 41 "/home/jnml/src/github.com/cznic/ccir/libc/builtin.h"
+//     typedef __builtin_va_list __gnuc_va_list ;
+//     typedef void * __FILE_TYPE__ ;
+//     typedef void * __jmp_buf [ 7 ] ;
+//     __FILE_TYPE__ __builtin_fopen ( char * __filename , char * __modes ) ;
+//     long unsigned int __builtin_strlen ( char * __s ) ;
+//     long unsigned int __builtin_bswap64 ( long unsigned int x ) ;
+//     char * __builtin_strchr ( char * __s , int __c ) ;
+//     char * __builtin_strcpy ( char * __dest , char * __src ) ;
+//     double __builtin_copysign ( double x , double y ) ;
+//     int __builtin_abs ( int j ) ;
+//     ...
+//     extern void flockfile ( FILE * __stream ) ;
+//     extern int ftrylockfile ( FILE * __stream ) ;
+//     extern void funlockfile ( FILE * __stream ) ;
+//     # 3 "hello.c"
+//     int main ( ) {
+//     printf ( "hello world\n" ) ;
+//     }
+//     $
 //
 // Multiple C files projects
 //
