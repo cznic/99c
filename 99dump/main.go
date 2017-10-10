@@ -24,6 +24,8 @@
 //
 // Sample
 //
+// Dump hello.c
+//
 //     $ cd ../examples/hello/
 //     $ ls *
 //     hello.c  log
