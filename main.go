@@ -7,6 +7,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"go/scanner"
 	"go/token"
 	"os"
 	"path/filepath"
@@ -26,6 +27,7 @@ func exit(code int, msg string, arg ...interface{}) {
 	if msg != "" {
 		fmt.Fprintf(os.Stderr, os.Args[0]+": "+msg+"\n", arg...)
 	}
+	os.Stderr.Sync()
 	os.Exit(code)
 }
 
@@ -39,7 +41,13 @@ func main() {
 	t := newTask()
 	t.args.getopt(os.Args)
 	if err := t.main(); err != nil {
-		exit(1, "%v", err)
+		switch x := err.(type) {
+		case scanner.ErrorList:
+			scanner.PrintError(os.Stderr, x)
+			os.Exit(1)
+		default:
+			exit(1, "%v", err)
+		}
 	}
 }
 
@@ -163,6 +171,7 @@ func (a *args) getopt(args []string) {
 			args[i+1] = ""
 		case arg == "-g":
 			a.g = true
+		//TODO case strings.HasPrefix(arg, "-l"):
 		case arg == "-o":
 			if i+1 >= len(args) {
 				exit(2, "missing -o argument")
@@ -170,10 +179,11 @@ func (a *args) getopt(args []string) {
 
 			a.o = args[i+1]
 			args[i+1] = ""
+		//TODO case arg == "-pthread":
 		case strings.HasPrefix(arg, "-"):
 			s := ""
 			if arg != "-h" {
-				s = fmt.Sprintf("unknown flag: %s\n", arg)
+				s = fmt.Sprintf("%v unknown flag: %s\n", os.Args, arg)
 			}
 			exit(2, `%sFlags:
   -99lib
