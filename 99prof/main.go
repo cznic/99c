@@ -261,7 +261,7 @@
 //     $
 //
 // Alternatively, using 99dump, we can see that the loop consists of 8
-// instructions at addresses 0x00044-0x0004b. 18300000*8 = 14640000 confirming
+// instructions at addresses 0x00044-0x0004b. 18300000*8 = 146400000 confirming
 // the estimated ~140MIPS value.
 package main
 
