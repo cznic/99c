@@ -38,7 +38,7 @@ func main() {
 	t := newTask()
 	t.args.getopt(os.Args)
 	if err := t.main(); err != nil {
-		exit(1, "%v\n", err)
+		exit(1, "%v", err)
 	}
 }
 
@@ -117,7 +117,7 @@ func (a *args) extra(name string) cc.Opt {
 	case "WideEnumValues":
 		return cc.EnableWideEnumValues()
 	}
-	exit(2, "unknown -x argument")
+	exit(2, "unknown -x argument\n")
 	return nil
 }
 
@@ -155,7 +155,7 @@ func (a *args) getopt(args []string) {
 			a.c = true
 		case arg == "-99extra":
 			if i+1 >= len(args) {
-				exit(2, "missing -99extra argument")
+				exit(2, "missing -99extra argument\n")
 			}
 
 			a.opts = append(a.opts, a.extra(args[i+1]))
@@ -164,7 +164,7 @@ func (a *args) getopt(args []string) {
 			a.g = true
 		case arg == "-o":
 			if i+1 >= len(args) {
-				exit(2, "missing -o argument")
+				exit(2, "missing -o argument\n")
 			}
 
 			a.o = args[i+1]
@@ -253,11 +253,11 @@ func newTask() *task { return &task{} }
 
 func (t *task) main() error {
 	if len(t.args.args) == 0 {
-		return fatalError("no input files")
+		return fatalError("no input files\n")
 	}
 
 	if t.args.o != "" && (t.args.c || t.args.E) && len(t.args.args) > 1 {
-		exit(2, "cannot specify -o with -c or -E with multiple files")
+		exit(2, "cannot specify -o with -c or -E with multiple files\n")
 	}
 
 	for _, arg := range t.args.args {
@@ -267,7 +267,7 @@ func (t *task) main() error {
 		case ".o":
 			t.ofiles = append(t.ofiles, arg)
 		default:
-			return fatalError("unrecognized file type: %v", arg)
+			return fatalError("unrecognized file type: %v\n", arg)
 		}
 	}
 
@@ -275,7 +275,7 @@ func (t *task) main() error {
 	case t.args.E:
 		model, err := ccir.NewModel()
 		if err != nil {
-			fatalError("%v", err)
+			fatalError("%v\n", err)
 		}
 
 		o := os.Stdout
@@ -329,13 +329,13 @@ func (t *task) main() error {
 	for _, fn := range t.ofiles {
 		f, err := os.Open(fn)
 		if err != nil {
-			return fatalError("%v", err)
+			return fatalError("%v\n", err)
 		}
 
 		r := bufio.NewReader(f)
 		var o ir.Objects
 		if _, err := o.ReadFrom(r); err != nil {
-			return fatalError("%v", err)
+			return fatalError("%v\n", err)
 		}
 
 		obj = append(obj, o)
@@ -343,10 +343,15 @@ func (t *task) main() error {
 
 	switch {
 	case t.args.c:
+		wd, err := os.Getwd()
+		if err != nil {
+			exit(1, "%v\n", err)
+		}
+
 		for _, arg := range t.cfiles {
 			model, err := ccir.NewModel()
 			if err != nil {
-				fatalError("%v", err)
+				fatalError("%v\n", err)
 			}
 
 			opts := []cc.Opt{
@@ -376,7 +381,7 @@ func (t *task) main() error {
 				return err
 			}
 
-			fn := arg[:len(arg)-len(filepath.Ext(arg))] + ".o"
+			fn := filepath.Join(wd, filepath.Base(arg[:len(arg)-len(filepath.Ext(arg))])+".o")
 			f, err := os.Create(fn)
 			if err != nil {
 				return err
@@ -399,7 +404,7 @@ func (t *task) main() error {
 	default:
 		model, err := ccir.NewModel()
 		if err != nil {
-			fatalError("%v", err)
+			fatalError("%v\n", err)
 		}
 
 		opts := []cc.Opt{
