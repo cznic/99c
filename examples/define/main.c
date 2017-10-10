@@ -1,6 +1,7 @@
 #include <stdio.h>
 
-int main() {
+int main()
+{
 #ifdef VERBOSE
 	printf(GREETING);
 #endif

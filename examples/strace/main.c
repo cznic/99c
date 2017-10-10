@@ -4,7 +4,8 @@
 
 #define BUFSIZE 1<<16
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
 	char *buf = malloc(BUFSIZE);
 	if (!buf) {
 		return 1;

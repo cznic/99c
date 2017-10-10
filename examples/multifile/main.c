@@ -1,6 +1,7 @@
 char *hello();
 
 #include <stdio.h>
-int main() {
+int main()
+{
 	printf("%s\n", hello());
 }

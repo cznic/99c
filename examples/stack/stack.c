@@ -1,12 +1,14 @@
-void f(int n) {
+void f(int n)
+{
 	if (n) {
-		f(n-1);
+		f(n - 1);
 		return;
 	}
 
 	*(char *)n;
 }
 
-int main() {
+int main()
+{
 	f(4);
 }

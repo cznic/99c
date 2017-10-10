@@ -1,3 +1,4 @@
-char *hello() {
+char *hello()
+{
 	return "hello world";
 }
