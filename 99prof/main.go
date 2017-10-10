@@ -102,8 +102,7 @@
 //
 // Bogomips
 //
-// Let's try to estimate the VM bogomips value on an older Intel® Xeon(R) CPU
-// X5450 @ 3.00GHz × 4 machine.
+// Let's try to estimate the VM bogomips value on an older Intel® Core™ i5-4670 CPU @ 3.40GHz × 4 machine.
 //
 //     $ cd ../examples/prof/
 //     $ ls *
@@ -132,21 +131,21 @@
 //
 //     	delay_loop(n);
 //     }
-//     $ 99c bogomips.c && 99prof -functions a.out 7000000
-//     # [99prof -functions a.out 7000000] 1.04654176s, 53.511 MIPS
+//     $ 99c bogomips.c && 99prof -functions a.out 9900000
+//     # [99prof -functions a.out 9900000] 999.017618ms, 79.279 MIPS
 //     # functions
-//     delay_loop	     56000    100.00%    100.00%
+//     delay_loop	     79200    100.00%    100.00%
 //     _start    	         1      0.00%    100.00%
-//     $ time ./a.out 18300000
+//     $ time ./a.out 34900000
 //
-//     real	0m0,996s
+//     real	0m1,001s
 //     user	0m0,996s
 //     sys	0m0,000s
 //     $
 //
-// In both cases the program executes for ~1 second. 18300000/7000000 = 2.614
+// In both cases the program executes for ~1 second. 34900000/9900000 = 3.525
 // and that's the slowdown coefficient when running the binary under 99prof.
-// The bogomips value is thus ~140 MIPS on this machine.
+// The bogomips value is thus ~279 MIPS on this machine.
 //
 //     $ 99dump a.out
 //     virtual.Binary a.out: code 0x0004d, text 0x00000, data 0x00030, bss 0x00020, pc2func 3, pc2line 23
@@ -261,8 +260,8 @@
 //     $
 //
 // Alternatively, using 99dump, we can see that the loop consists of 8
-// instructions at addresses 0x00044-0x0004b. 18300000*8 = 146400000 confirming
-// the estimated ~140MIPS value.
+// instructions at addresses 0x00044-0x0004b. 34900000*8 = 27920000 confirming
+// the estimated ~279MIPS value.
 package main
 
 import (
