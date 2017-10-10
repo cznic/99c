@@ -436,11 +436,19 @@ func (t *task) main() error {
 		}
 
 		var out []ir.Object
+		in := append(obj, o)
 		switch {
 		case t.args.lib:
-			out, err = ir.LinkLib(append(obj, o)...)
+			out, err = ir.LinkLib(in...)
 		default:
-			out, err = ir.LinkMain(append(obj, o)...)
+			for _, v := range in {
+				for _, o := range v {
+					if err := o.Verify(); err != nil {
+						exit(1, "%v", err)
+					}
+				}
+			}
+			out, err = ir.LinkMain(in...)
 		}
 		if err != nil {
 			return err
