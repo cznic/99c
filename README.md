@@ -52,31 +52,62 @@ Command 99c is a c99 compiler targeting a virtual machine.
 
 Output of 99c -h
 
-     Usage of 99c:
-       -99lib
-                Library link mode.
-       -Dname
-                Equivalent to inserting '#define name 1' at the start of the
-                translation unit.
-       -Dname=definition
-                Equivalent to inserting '#define name definition' at the start
-                of the translation unit.
-       -E       Copy C-language source files to standard output, executing all
-                preprocessor directives; no compilation shall be performed. If
-                any operand is not a text file, the effects are unspecified.
-       -Ipath
-                Add path to the include files search paths.
-       -Olevel
-                Optimization setting, ignored.
-       -Wwarn
-                Warning level, ignored.
-       -c       Suppress the link-edit phase of the compilation, and do not
-                remove any object files that are produced.
-       -g       Produce debug information, ignored.
-       -o pathname
-                Use the specified pathname, instead of the default a.out, for
-                the executable file produced. If the -o option is present with
-                -c or -E, the result is unspecified.
+99c: Flags:
+  -99lib
+    	Library link mode.
+  -Dname
+	Equivalent to inserting '#define name 1' at the start of the
+	translation unit.
+  -Dname=definition
+	Equivalent to inserting '#define name definition' at the start of the
+	translation unit.
+  -E	Copy C-language source files to standard output, executing all
+  	preprocessor directives; no compilation shall be performed. If any
+  	operand is not a text file, the effects are unspecified.
+  -Ipath
+	Add path to the include files search paths.
+  -Olevel
+	Optimization setting, ignored.
+  -Wwarn
+	Warning level, ignored.
+  -c	Suppress the link-edit phase of the compilation, and do not
+  	remove any object files that are produced.
+  -g	Produce debugging information, ignored.
+  -o pathname
+    	Use the specified pathname, instead of the default a.out, for
+    	the executable file produced. If the -o option is present with
+    	-c or -E, the result is unspecified.
+  -99extra flag
+     Extra cc flags:
+        AlignOf
+        AlternateKeywords
+        AnonymousStructFields
+        Asm
+        BuiltinClassifyType
+        BuiltinConstantP
+        ComputedGotos
+        DefineOmitCommaBeforeDDD
+        DlrInIdentifiers
+        EmptyDeclarations
+        EmptyDefine
+        EmptyStructs
+        ImaginarySuffix
+        ImplicitFuncDef
+        ImplicitIntType
+        IncludeNext
+        LegacyDesignators
+        NonConstStaticInitExpressions
+        Noreturn
+        OmitConditionalOperand
+        OmitFuncArgTypes
+        OmitFuncRetType
+        ParenthesizedCompoundStatemen
+        StaticAssert
+        TypeOf
+        UndefExtraTokens
+        UnsignedEnums
+        WideBitFieldTypes
+        WideEnumValues
 
 Rest of the input is a list of file names, either C (.c) files or object (.o) files.
 

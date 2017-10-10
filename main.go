@@ -174,7 +174,7 @@ func (a *args) getopt(args []string) {
 			if arg != "-h" {
 				s = fmt.Sprintf("unknown flag: %s\n", arg)
 			}
-			exit(2, `%sUsage of 99c:
+			exit(2, `%sFlags:
   -99lib
     	Library link mode.
   -Dname
@@ -200,36 +200,36 @@ func (a *args) getopt(args []string) {
     	the executable file produced. If the -o option is present with
     	-c or -E, the result is unspecified.
   -99extra flag
-    Extra cc flags:
-      AlignOf
-      AlternateKeywords
-      AnonymousStructFields
-      Asm
-      BuiltinClassifyType
-      BuiltinConstantP
-      ComputedGotos
-      DefineOmitCommaBeforeDDD
-      DlrInIdentifiers
-      EmptyDeclarations
-      EmptyDefine
-      EmptyStructs
-      ImaginarySuffix
-      ImplicitFuncDef
-      ImplicitIntType
-      IncludeNext
-      LegacyDesignators
-      NonConstStaticInitExpressions
-      Noreturn
-      OmitConditionalOperand
-      OmitFuncArgTypes
-      OmitFuncRetType
-      ParenthesizedCompoundStatemen
-      StaticAssert
-      TypeOf
-      UndefExtraTokens
-      UnsignedEnums
-      WideBitFieldTypes
-      WideEnumValues
+     Extra cc flags:
+        AlignOf
+        AlternateKeywords
+        AnonymousStructFields
+        Asm
+        BuiltinClassifyType
+        BuiltinConstantP
+        ComputedGotos
+        DefineOmitCommaBeforeDDD
+        DlrInIdentifiers
+        EmptyDeclarations
+        EmptyDefine
+        EmptyStructs
+        ImaginarySuffix
+        ImplicitFuncDef
+        ImplicitIntType
+        IncludeNext
+        LegacyDesignators
+        NonConstStaticInitExpressions
+        Noreturn
+        OmitConditionalOperand
+        OmitFuncArgTypes
+        OmitFuncRetType
+        ParenthesizedCompoundStatemen
+        StaticAssert
+        TypeOf
+        UndefExtraTokens
+        UnsignedEnums
+        WideBitFieldTypes
+        WideEnumValues
 `, s)
 		default:
 			if arg != "" {
