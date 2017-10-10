@@ -22,8 +22,9 @@ import (
 )
 
 func exit(code int, msg string, arg ...interface{}) {
+	msg = strings.TrimSpace(msg)
 	if msg != "" {
-		fmt.Fprintf(os.Stderr, os.Args[0]+": "+msg, arg...)
+		fmt.Fprintf(os.Stderr, os.Args[0]+": "+msg+"\n", arg...)
 	}
 	os.Exit(code)
 }
@@ -31,7 +32,7 @@ func exit(code int, msg string, arg ...interface{}) {
 func main() {
 	defer func() {
 		if err := recover(); err != nil {
-			exit(1, "PANIC: %v\n%s\n", err, debug.Stack())
+			exit(1, "PANIC: %v\n%s", err, debug.Stack())
 		}
 	}()
 
@@ -117,8 +118,8 @@ func (a *args) extra(name string) cc.Opt {
 	case "WideEnumValues":
 		return cc.EnableWideEnumValues()
 	}
-	exit(2, "unknown -x argument\n")
-	return nil
+	exit(2, "unknown -99extra argument: %s", name)
+	panic("unreachable")
 }
 
 func (a *args) getopt(args []string) {
@@ -155,7 +156,7 @@ func (a *args) getopt(args []string) {
 			a.c = true
 		case arg == "-99extra":
 			if i+1 >= len(args) {
-				exit(2, "missing -99extra argument\n")
+				exit(2, "missing -99extra argument")
 			}
 
 			a.opts = append(a.opts, a.extra(args[i+1]))
@@ -164,7 +165,7 @@ func (a *args) getopt(args []string) {
 			a.g = true
 		case arg == "-o":
 			if i+1 >= len(args) {
-				exit(2, "missing -o argument\n")
+				exit(2, "missing -o argument")
 			}
 
 			a.o = args[i+1]
@@ -229,8 +230,8 @@ func (a *args) getopt(args []string) {
         UndefExtraTokens
         UnsignedEnums
         WideBitFieldTypes
-        WideEnumValues
-`, s)
+        WideEnumValues`,
+				s)
 		default:
 			if arg != "" {
 				a.args = append(a.args, arg)
@@ -253,11 +254,11 @@ func newTask() *task { return &task{} }
 
 func (t *task) main() error {
 	if len(t.args.args) == 0 {
-		return fatalError("no input files\n")
+		return fatalError("no input files")
 	}
 
 	if t.args.o != "" && (t.args.c || t.args.E) && len(t.args.args) > 1 {
-		exit(2, "cannot specify -o with -c or -E with multiple files\n")
+		exit(2, "cannot specify -o with -c or -E with multiple files")
 	}
 
 	for _, arg := range t.args.args {
@@ -267,7 +268,7 @@ func (t *task) main() error {
 		case ".o":
 			t.ofiles = append(t.ofiles, arg)
 		default:
-			return fatalError("unrecognized file type: %v\n", arg)
+			return fatalError("unrecognized file type: %v", arg)
 		}
 	}
 
@@ -275,13 +276,13 @@ func (t *task) main() error {
 	case t.args.E:
 		model, err := ccir.NewModel()
 		if err != nil {
-			fatalError("%v\n", err)
+			fatalError("%v", err)
 		}
 
 		o := os.Stdout
 		if fn := t.args.o; fn != "" {
 			if o, err = os.Create(fn); err != nil {
-				fatalError("%v\n", err)
+				fatalError("%v", err)
 			}
 		}
 		out := bufio.NewWriter(o)
@@ -329,13 +330,13 @@ func (t *task) main() error {
 	for _, fn := range t.ofiles {
 		f, err := os.Open(fn)
 		if err != nil {
-			return fatalError("%v\n", err)
+			return fatalError("%v", err)
 		}
 
 		r := bufio.NewReader(f)
 		var o ir.Objects
 		if _, err := o.ReadFrom(r); err != nil {
-			return fatalError("%v\n", err)
+			return fatalError("%v", err)
 		}
 
 		obj = append(obj, o)
@@ -345,13 +346,13 @@ func (t *task) main() error {
 	case t.args.c:
 		wd, err := os.Getwd()
 		if err != nil {
-			exit(1, "%v\n", err)
+			exit(1, "%v", err)
 		}
 
 		for _, arg := range t.cfiles {
 			model, err := ccir.NewModel()
 			if err != nil {
-				fatalError("%v\n", err)
+				fatalError("%v", err)
 			}
 
 			opts := []cc.Opt{
@@ -404,7 +405,7 @@ func (t *task) main() error {
 	default:
 		model, err := ccir.NewModel()
 		if err != nil {
-			fatalError("%v\n", err)
+			fatalError("%v", err)
 		}
 
 		opts := []cc.Opt{
