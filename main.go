@@ -262,7 +262,7 @@ func (t *task) main() error {
 
 	for _, arg := range t.args.args {
 		switch filepath.Ext(arg) {
-		case ".c":
+		case ".c", ".h":
 			t.cfiles = append(t.cfiles, arg)
 		case ".o":
 			t.ofiles = append(t.ofiles, arg)
