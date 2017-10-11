@@ -118,6 +118,10 @@ To install or update the compiler and the virtual machine
 
     $ go get [-u] github.com/cznic/99c github.com/cznic/99c/99run
 
+To update the toolchain and rebuild all commands
+
+    $ go generate
+
 Online documentation: [godoc.org/github.com/cznic/99c](http://godoc.org/github.com/cznic/99c)
 
 ### Changelog

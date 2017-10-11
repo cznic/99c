@@ -2,6 +2,12 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
+//go:generate go get -u
+//go:generate go install -tags virtual.profile ./99prof
+//go:generate go install -tags virtual.strace ./99strace
+//go:generate go install -tags virtual.trace ./99trace
+//go:generate go install ./99dump
+//go:generate go install ./99run
 package main
 
 import (

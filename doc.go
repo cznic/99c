@@ -74,6 +74,12 @@
 //
 //	$ go get [-u] github.com/cznic/99c github.com/cznic/99c/99run
 //
+// To update the toolchain and rebuild all commands
+//
+//	$ go generate
+//
+// Use the -x flag to view the commands executed.
+//
 // Online documentation: http://godoc.org/github.com/cznic/99c
 //
 // Changelog

@@ -33,15 +33,16 @@ edit:
 
 editor:
 	find -name \*.c -or -name \*.h | xargs -n1 indent -linux -l -1
+	find -name \*.c~ -or -name \*.h~ | xargs rm
 	gofmt -l -s -w *.go
 	go test -i
 	go test 2>&1 | tee log
 	go install 
-	go install ./99dump
 	go install -tags virtual.profile ./99prof
-	go install ./99run
 	go install -tags virtual.strace ./99strace
 	go install -tags virtual.trace ./99trace
+	go install ./99dump
+	go install ./99run
 
 internalError:
 	egrep -ho '"internal error.*"' *.go | sort | cat -n
