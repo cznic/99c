@@ -183,7 +183,8 @@ func (a *args) getopt(args []string) {
 			args[i+1] = ""
 		case arg == "-g":
 			a.g = true
-		//TODO case strings.HasPrefix(arg, "-l"):
+		case strings.HasPrefix(arg, "-l"):
+			//TODO
 		case arg == "-o":
 			if i+1 >= len(args) {
 				exit(2, "missing -o argument")
@@ -191,7 +192,8 @@ func (a *args) getopt(args []string) {
 
 			a.o = args[i+1]
 			args[i+1] = ""
-		//TODO case arg == "-pthread":
+		case arg == "-pthread":
+			//TODO
 		case strings.HasPrefix(arg, "-"):
 			s := ""
 			if arg != "-h" {
@@ -199,29 +201,33 @@ func (a *args) getopt(args []string) {
 			}
 			exit(2, `%sFlags:
   -99lib
-    	Library link mode.
+        Library link mode.
   -Dname
-	Equivalent to inserting '#define name 1' at the start of the
-	translation unit.
+        Equivalent to inserting '#define name 1' at the start of the
+        translation unit.
   -Dname=definition
-	Equivalent to inserting '#define name definition' at the start of the
-	translation unit.
-  -E	Copy C-language source files to standard output, executing all
-  	preprocessor directives; no compilation shall be performed. If any
-  	operand is not a text file, the effects are unspecified.
+        Equivalent to inserting '#define name definition' at the start of the
+        translation unit.
+  -E    Copy C-language source files to standard output, executing all
+        preprocessor directives; no compilation shall be performed. If any
+        operand is not a text file, the effects are unspecified.
   -Ipath
-	Add path to the include files search paths.
+        Add path to the include files search paths.
   -Olevel
-	Optimization setting, ignored.
+        Optimization setting, ignored.
   -Wwarn
-	Warning level, ignored.
-  -c	Suppress the link-edit phase of the compilation, and do not
-  	remove any object files that are produced.
-  -g	Produce debugging information, ignored.
+        Warning level, ignored.
+  -c    Suppress the link-edit phase of the compilation, and do not
+        remove any object files that are produced.
+  -g    Produce debugging information, ignored.
+  -l<lib>
+        Search the library named <lib> when linking. Ignored. (TODO)
   -o pathname
-    	Use the specified pathname, instead of the default a.out, for
-    	the executable file produced. If the -o option is present with
-    	-c or -E, the result is unspecified.
+        Use the specified pathname, instead of the default a.out, for
+        the executable file produced. If the -o option is present with
+        -c or -E, the result is unspecified.
+  -pthread
+        Ignored. (TODO)
   -99extra flag
      Extra cc flags:
         AlignOf
