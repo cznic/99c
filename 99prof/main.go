@@ -261,7 +261,7 @@
 //
 // Alternatively, using 99dump, we can see that the loop consists of 8
 // instructions at addresses 0x00044-0x0004b. 34900000*8 = 279200000 confirming
-// the estimated ~279MIPS value.
+// the estimated ~279 MIPS value.
 package main
 
 import (

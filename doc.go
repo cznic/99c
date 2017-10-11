@@ -37,6 +37,10 @@
 //             -c or -E, the result is unspecified.
 //       -pthread
 //             Ignored. (TODO)
+//       -shared
+//             Ignored. (TODO)
+//       -soname arg
+//             Ignored. (TODO)
 //       -99extra flag
 //          Extra cc flags:
 //             AlignOf

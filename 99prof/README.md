@@ -261,4 +261,4 @@ In both cases the program executes for ~1 second. 34900000/9900000 = 3.525 and t
     0x00014	function	main
     $
 
-Alternatively, using 99dump, we can see that the loop consists of 8 instructions at addresses 0x00044-0x0004b. 34900000*8 = 279200000 confirming the estimated ~279MIPS value.
+Alternatively, using 99dump, we can see that the loop consists of 8 instructions at addresses 0x00044-0x0004b. 34900000*8 = 279200000 confirming the estimated ~279 MIPS value.

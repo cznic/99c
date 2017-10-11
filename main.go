@@ -38,6 +38,9 @@ func exit(code int, msg string, arg ...interface{}) {
 }
 
 func main() {
+	if s := os.Getenv("DIAG99C"); strings.Contains(","+s+",", ",OS_ARGS,") {
+		fmt.Fprintf(os.Stderr, "%v\n", os.Args)
+	}
 	defer func() {
 		if err := recover(); err != nil {
 			exit(1, "PANIC: %v\n%s", err, debug.Stack())
@@ -63,18 +66,19 @@ type testHooks struct {
 }
 
 type args struct {
-	D     []string // -D
-	E     bool     // -E
-	I     []string // -I
-	O     string   // -O
-	W     string   // -W
-	args  []string // Non flag arguments in order of appearance.
-	c     bool     // -c
-	g     bool     // -g
-	hooks testHooks
-	lib   bool     // -99lib
-	o     string   // -o
-	opts  []cc.Opt // cc flags
+	D      []string // -D
+	E      bool     // -E
+	I      []string // -I
+	O      string   // -O
+	W      string   // -W
+	args   []string // Non flag arguments in order of appearance.
+	c      bool     // -c
+	g      bool     // -g
+	hooks  testHooks
+	lib    bool     // -99lib
+	o      string   // -o
+	opts   []cc.Opt // cc flags
+	shared bool     // -shared
 }
 
 func (a *args) extra(name string) cc.Opt {
@@ -194,6 +198,16 @@ func (a *args) getopt(args []string) {
 			args[i+1] = ""
 		case arg == "-pthread":
 			//TODO
+		case arg == "-shared":
+			a.shared = true
+			//TODO
+		case arg == "-soname":
+			if i+1 >= len(args) {
+				exit(2, "missing -soname argument")
+			}
+
+			//TODO
+			args[i+1] = ""
 		case strings.HasPrefix(arg, "-"):
 			s := ""
 			if arg != "-h" {
@@ -227,6 +241,10 @@ func (a *args) getopt(args []string) {
         the executable file produced. If the -o option is present with
         -c or -E, the result is unspecified.
   -pthread
+        Ignored. (TODO)
+  -shared
+        Ignored. (TODO)
+  -soname arg
         Ignored. (TODO)
   -99extra flag
      Extra cc flags:
@@ -469,7 +487,7 @@ func (t *task) main() error {
 		var out []ir.Object
 		in := append(obj, o)
 		switch {
-		case t.args.lib:
+		case t.args.lib || t.args.shared:
 			out, err = ir.LinkLib(in...)
 		default:
 			for _, v := range in {
