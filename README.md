@@ -122,6 +122,8 @@ To update the toolchain and rebuild all commands
 
     $ go generate
 
+Use the -x flag to view the commands executed.
+
 Online documentation: [godoc.org/github.com/cznic/99c](http://godoc.org/github.com/cznic/99c)
 
 ### Changelog

@@ -6,11 +6,17 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 	"os"
 	"path"
+	"path/filepath"
 	"runtime"
 	"strings"
 	"testing"
+
+	"github.com/cznic/ir"
+	"github.com/cznic/virtual"
+	"github.com/cznic/xc"
 )
 
 func caller(s string, va ...interface{}) {
@@ -51,6 +57,54 @@ func init() {
 
 // ============================================================================
 
-func Test(t *testing.T) {
-	t.Log("TODO")
+// https://github.com/cznic/99c/issues/4
+func TestIssue4(t *testing.T) {
+	src, err := filepath.Abs("testdata/issue4.c")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	wd, err := os.Getwd()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	defer func() {
+		if err := os.Chdir(wd); err != nil {
+			t.Fatal(err)
+		}
+	}()
+
+	dir, err := ioutil.TempDir("", "99c-test-")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if err := os.Chdir(dir); err != nil {
+		t.Fatal(err)
+	}
+
+	//TODO defer os.RemoveAll(dir)
+
+	j := newTask()
+	j.args.c = true
+	j.args.args = []string{src}
+	if err := j.main(); err != nil {
+		t.Fatal(err)
+	}
+
+	var bin *virtual.Binary
+	obj := filepath.Join(dir, "issue4.o")
+	j = newTask()
+	j.args.args = []string{obj}
+	j.args.hooks.bin = &bin
+	if err := j.main(); err != nil {
+		t.Fatal(err)
+	}
+
+	if _, ok := bin.Sym[ir.NameID(xc.Dict.SID("fib"))]; !ok {
+		t.Fatalf("fib symbol missing: %v", bin.Sym)
+	}
+
+	t.Log(dir)
 }

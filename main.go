@@ -57,18 +57,23 @@ func main() {
 	}
 }
 
+type testHooks struct {
+	bin **virtual.Binary
+}
+
 type args struct {
-	D    []string // -D
-	E    bool     // -E
-	I    []string // -I
-	O    string   // -O
-	W    string   // -W
-	args []string // Non flag arguments in order of appearance.
-	c    bool     // -c
-	g    bool     // -g
-	lib  bool     // -99lib
-	o    string   // -o
-	opts []cc.Opt // cc flags
+	D     []string // -D
+	E     bool     // -E
+	I     []string // -I
+	O     string   // -O
+	W     string   // -W
+	args  []string // Non flag arguments in order of appearance.
+	c     bool     // -c
+	g     bool     // -g
+	hooks testHooks
+	lib   bool     // -99lib
+	o     string   // -o
+	opts  []cc.Opt // cc flags
 }
 
 func (a *args) extra(name string) cc.Opt {
@@ -263,7 +268,7 @@ type task struct {
 }
 
 func fatalError(msg string, arg ...interface{}) error {
-	return fmt.Errorf("%s: fatal error: %s", os.Args[0], fmt.Sprintf(msg, arg...))
+	return fmt.Errorf("fatal error: %s", fmt.Sprintf(msg, arg...))
 }
 
 func newTask() *task { return &task{} }
@@ -362,7 +367,7 @@ func (t *task) main() error {
 	case t.args.c:
 		wd, err := os.Getwd()
 		if err != nil {
-			exit(1, "%v", err)
+			return err
 		}
 
 		for _, arg := range t.cfiles {
@@ -460,7 +465,7 @@ func (t *task) main() error {
 			for _, v := range in {
 				for _, o := range v {
 					if err := o.Verify(); err != nil {
-						exit(1, "%v", err)
+						return err
 					}
 				}
 			}
@@ -475,6 +480,9 @@ func (t *task) main() error {
 			return err
 		}
 
+		if p := t.args.hooks.bin; p != nil {
+			*p = bin
+		}
 		fn := t.args.o
 		if fn == "" {
 			fn = "a.out"
