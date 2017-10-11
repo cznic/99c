@@ -84,19 +84,38 @@ func TestIssue4(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	//TODO defer os.RemoveAll(dir)
+	defer os.RemoveAll(dir)
 
+	var obj, obj2 ir.Objects
 	j := newTask()
 	j.args.c = true
+	j.args.hooks.obj = &obj
 	j.args.args = []string{src}
 	if err := j.main(); err != nil {
 		t.Fatal(err)
 	}
 
+	objf := filepath.Join(dir, "issue4.o")
+	f, err := os.Open(objf)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if _, err := obj2.ReadFrom(f); err != nil {
+		t.Fatal(err)
+	}
+
+	if err := f.Close(); err != nil {
+		t.Fatal(err)
+	}
+
+	if g, e := ir.PrettyString(obj2), ir.PrettyString(obj); g != e {
+		t.Fatalf("got\n%s\nexp\n%s", g, e)
+	}
+
 	var bin *virtual.Binary
-	obj := filepath.Join(dir, "issue4.o")
 	j = newTask()
-	j.args.args = []string{obj}
+	j.args.args = []string{objf}
 	j.args.hooks.bin = &bin
 	if err := j.main(); err != nil {
 		t.Fatal(err)
@@ -105,6 +124,4 @@ func TestIssue4(t *testing.T) {
 	if _, ok := bin.Sym[ir.NameID(xc.Dict.SID("fib"))]; !ok {
 		t.Fatalf("fib symbol missing: %v", bin.Sym)
 	}
-
-	t.Log(dir)
 }

@@ -36,7 +36,7 @@ editor:
 	find -name \*.c~ -or -name \*.h~ | xargs rm
 	gofmt -l -s -w *.go
 	go test -i
-	go test 2>&1 | tee log
+	go test
 	go install 
 	go install -tags virtual.profile ./99prof
 	go install -tags virtual.strace ./99strace

@@ -59,6 +59,7 @@ func main() {
 
 type testHooks struct {
 	bin **virtual.Binary
+	obj *ir.Objects
 }
 
 type args struct {
@@ -403,6 +404,9 @@ func (t *task) main() error {
 				return err
 			}
 
+			if p := t.args.hooks.obj; p != nil {
+				*p = o
+			}
 			fn := filepath.Join(wd, filepath.Base(arg[:len(arg)-len(filepath.Ext(arg))])+".o")
 			f, err := os.Create(fn)
 			if err != nil {
