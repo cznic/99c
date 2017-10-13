@@ -86,6 +86,8 @@ Output of 99c -h
             Ignored.
       -pthread
             Ignored. (TODO)
+      -rpath pathname
+            Ignored. (TODO)
       -shared
             Ignored. (TODO)
       -soname arg

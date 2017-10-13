@@ -202,6 +202,13 @@ func (a *args) getopt(args []string) {
 			// nop
 		case arg == "-pthread":
 			//TODO
+		case arg == "-rpath":
+			if i+1 >= len(args) {
+				exit(2, "missing -rptah argument")
+			}
+
+			a.o = args[i+1]
+			args[i+1] = ""
 		case arg == "-shared":
 			a.shared = true
 			//TODO
@@ -249,6 +256,8 @@ func (a *args) getopt(args []string) {
   -pedantic
         Ignored.
   -pthread
+        Ignored. (TODO)
+  -rpath pathname
         Ignored. (TODO)
   -shared
         Ignored. (TODO)

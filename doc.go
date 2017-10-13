@@ -41,6 +41,8 @@
 //             Ignored.
 //       -pthread
 //             Ignored. (TODO)
+//       -rpath pathname
+//             Ignored. (TODO)
 //       -shared
 //             Ignored. (TODO)
 //       -soname arg
