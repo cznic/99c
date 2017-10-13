@@ -176,6 +176,8 @@ func (a *args) getopt(args []string) {
 			a.O = arg[2:]
 		case strings.HasPrefix(arg, "-W"):
 			a.W = arg[2:]
+		case arg == "-ansi":
+			// nop
 		case arg == "-c":
 			a.c = true
 		case arg == "-99extra":
@@ -196,6 +198,8 @@ func (a *args) getopt(args []string) {
 
 			a.o = args[i+1]
 			args[i+1] = ""
+		case arg == "-pedantic":
+			// nop
 		case arg == "-pthread":
 			//TODO
 		case arg == "-shared":
@@ -231,6 +235,8 @@ func (a *args) getopt(args []string) {
         Optimization setting, ignored.
   -Wwarn
         Warning level, ignored.
+  -ansi
+        Ignored.
   -c    Suppress the link-edit phase of the compilation, and do not
         remove any object files that are produced.
   -g    Produce debugging information, ignored.
@@ -240,6 +246,8 @@ func (a *args) getopt(args []string) {
         Use the specified pathname, instead of the default a.out, for
         the executable file produced. If the -o option is present with
         -c or -E, the result is unspecified.
+  -pedantic
+        Ignored.
   -pthread
         Ignored. (TODO)
   -shared

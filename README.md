@@ -71,6 +71,8 @@ Output of 99c -h
             Optimization setting, ignored.
       -Wwarn
             Warning level, ignored.
+      -ansi
+            Ignored.
       -c    Suppress the link-edit phase of the compilation, and do not
             remove any object files that are produced.
       -g    Produce debugging information, ignored.
@@ -80,6 +82,8 @@ Output of 99c -h
             Use the specified pathname, instead of the default a.out, for
             the executable file produced. If the -o option is present with
             -c or -E, the result is unspecified.
+      -pedantic
+            Ignored.
       -pthread
             Ignored. (TODO)
       -shared
