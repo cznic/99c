@@ -260,7 +260,7 @@ func (a *args) getopt(args []string) {
   -rpath pathname
         Ignored. (TODO)
   -shared
-        Ignored. (TODO)
+        Link mode shared library.
   -soname arg
         Ignored. (TODO)
   -99extra flag
@@ -328,7 +328,7 @@ func (t *task) main() error {
 		switch filepath.Ext(arg) {
 		case ".c", ".h":
 			t.cfiles = append(t.cfiles, arg)
-		case ".o":
+		case ".o", ".so":
 			t.ofiles = append(t.ofiles, arg)
 		default:
 			return fatalError("unrecognized file type: %v", arg)
@@ -469,6 +469,10 @@ func (t *task) main() error {
 		}
 		return nil
 	default:
+		fn := t.args.o
+		if fn == "" {
+			fn = "a.out"
+		}
 		model, err := ccir.NewModel()
 		if err != nil {
 			fatalError("%v", err)
@@ -501,10 +505,21 @@ func (t *task) main() error {
 			return err
 		}
 
-		var out []ir.Object
+		var out ir.Objects
 		in := append(obj, o)
 		switch {
-		case t.args.lib || t.args.shared:
+		case t.args.shared:
+			for _, v := range in {
+				out = append(out, v...)
+			}
+			f, err := os.Create(fn)
+			if err != nil {
+				return err
+			}
+
+			_, err = out.WriteTo(f)
+			return err
+		case t.args.lib:
 			out, err = ir.LinkLib(in...)
 		default:
 			for _, v := range in {
@@ -528,11 +543,6 @@ func (t *task) main() error {
 		if p := t.args.hooks.bin; p != nil {
 			*p = bin
 		}
-		fn := t.args.o
-		if fn == "" {
-			fn = "a.out"
-		}
-
 		f, err := os.Create(fn)
 		if err != nil {
 			return err

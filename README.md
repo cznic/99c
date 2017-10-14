@@ -89,7 +89,7 @@ Output of 99c -h
       -rpath pathname
             Ignored. (TODO)
       -shared
-            Ignored. (TODO)
+            Link mode shared library.
       -soname arg
             Ignored. (TODO)
       -99extra flag
