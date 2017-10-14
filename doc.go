@@ -23,7 +23,7 @@
 //       -Ipath
 //             Add path to the include files search paths.
 //       -Lpath
-//             Ignored. (TODO)
+//             Add path to search paths for -l.
 //       -Olevel
 //             Optimization setting, ignored.
 //       -Wwarn
@@ -33,8 +33,8 @@
 //       -c    Suppress the link-edit phase of the compilation, and do not
 //             remove any object files that are produced.
 //       -g    Produce debugging information, ignored.
-//       -l<lib>
-//             Search the library named <lib> when linking. Ignored. (TODO)
+//       -l<name>
+//             Link with lib<name>.
 //       -o pathname
 //             Use the specified pathname, instead of the default a.out, for
 //             the executable file produced. If the -o option is present with

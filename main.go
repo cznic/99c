@@ -37,7 +37,7 @@ func exit(code int, msg string, arg ...interface{}) {
 }
 
 func main() {
-	if s := os.Getenv("DIAG99C"); strings.Contains(","+s+",", ",OS_ARGS,") {
+	if s := os.Getenv("DIAG99C"); strings.Contains(","+s+",", ",os-args,") {
 		fmt.Fprintf(os.Stderr, "%v\n", os.Args)
 	}
 	defer func() {
@@ -75,6 +75,7 @@ type args struct {
 	c      bool     // -c
 	g      bool     // -g
 	hooks  testHooks
+	l      []string // -l
 	lib    bool     // -99lib
 	o      string   // -o
 	opts   []cc.Opt // cc flags
@@ -197,7 +198,12 @@ func (a *args) getopt(args []string) {
 		case arg == "-g":
 			a.g = true
 		case strings.HasPrefix(arg, "-l"):
-			//TODO
+			if arg == "-l" {
+				break
+			}
+
+			arg = arg[2:]
+			a.l = append(a.l, arg)
 		case arg == "-o":
 			if i+1 >= len(args) {
 				exit(2, "missing -o argument")
@@ -246,7 +252,7 @@ func (a *args) getopt(args []string) {
   -Ipath
         Add path to the include files search paths.
   -Lpath
-        Ignored. (TODO)
+        Add path to search paths for -l.
   -Olevel
         Optimization setting, ignored.
   -Wwarn
@@ -256,8 +262,8 @@ func (a *args) getopt(args []string) {
   -c    Suppress the link-edit phase of the compilation, and do not
         remove any object files that are produced.
   -g    Produce debugging information, ignored.
-  -l<lib>
-        Search the library named <lib> when linking. Ignored. (TODO)
+  -l<name>
+        Link with lib<name>.
   -o pathname
         Use the specified pathname, instead of the default a.out, for
         the executable file produced. If the -o option is present with
@@ -331,6 +337,23 @@ func (t *task) main() error {
 
 	if t.args.o != "" && (t.args.c || t.args.E) && len(t.args.args) > 1 {
 		exit(2, "cannot specify -o with -c or -E with multiple files")
+	}
+
+	lsearch := append([]string{"."}, t.args.L...)
+	for _, v := range t.args.l {
+		for _, d := range lsearch {
+			fn := filepath.Join(d, fmt.Sprintf("lib%s.so", v))
+			_, err := os.Stat(fn)
+			if err != nil {
+				if !os.IsNotExist(err) {
+					return fatalError("%v", err)
+				}
+
+				continue
+			}
+
+			t.ofiles = append(t.ofiles, fn)
+		}
 	}
 
 	for _, arg := range t.args.args {
