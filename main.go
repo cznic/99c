@@ -541,9 +541,7 @@ func (t *task) main() error {
 		in := append(obj, o)
 		switch {
 		case t.args.shared:
-			for _, v := range in {
-				out = append(out, v)
-			}
+			out = append(out, in...)
 			f, err := os.Create(fn)
 			if err != nil {
 				return err
