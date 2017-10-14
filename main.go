@@ -68,6 +68,7 @@ type args struct {
 	D      []string // -D
 	E      bool     // -E
 	I      []string // -I
+	L      []string // -L
 	O      string   // -O
 	W      string   // -W
 	args   []string // Non flag arguments in order of appearance.
@@ -171,6 +172,13 @@ func (a *args) getopt(args []string) {
 
 			arg = arg[2:]
 			a.I = append(a.I, arg)
+		case strings.HasPrefix(arg, "-L"):
+			if arg == "-L" {
+				break
+			}
+
+			arg = arg[2:]
+			a.L = append(a.L, arg)
 		case strings.HasPrefix(arg, "-O"):
 			a.O = arg[2:]
 		case strings.HasPrefix(arg, "-W"):
@@ -237,6 +245,8 @@ func (a *args) getopt(args []string) {
         operand is not a text file, the effects are unspecified.
   -Ipath
         Add path to the include files search paths.
+  -Lpath
+        Ignored. (TODO)
   -Olevel
         Optimization setting, ignored.
   -Wwarn

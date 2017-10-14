@@ -72,6 +72,8 @@ Output of 99c -h
             operand is not a text file, the effects are unspecified.
       -Ipath
             Add path to the include files search paths.
+      -Lpath
+            Ignored. (TODO)
       -Olevel
             Optimization setting, ignored.
       -Wwarn
