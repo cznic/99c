@@ -421,7 +421,7 @@ func (t *task) main() error {
 		return err
 	}
 
-	var obj [][]ir.Object
+	var obj ir.Objects
 	for _, fn := range t.ofiles {
 		f, err := os.Open(fn)
 		if err != nil {
@@ -434,7 +434,7 @@ func (t *task) main() error {
 			return fatalError("%v", err)
 		}
 
-		obj = append(obj, o)
+		obj = append(obj, o...)
 	}
 
 	switch {
@@ -478,7 +478,7 @@ func (t *task) main() error {
 			}
 
 			if p := t.args.hooks.obj; p != nil {
-				*p = o
+				*p = ir.Objects{o}
 			}
 			fn := filepath.Join(wd, filepath.Base(arg[:len(arg)-len(filepath.Ext(arg))])+".o")
 			f, err := os.Create(fn)
@@ -487,7 +487,7 @@ func (t *task) main() error {
 			}
 
 			w := bufio.NewWriter(f)
-			if _, err := ir.Objects(o).WriteTo(w); err != nil {
+			if _, err := (ir.Objects{o}).WriteTo(w); err != nil {
 				return err
 			}
 
@@ -542,7 +542,7 @@ func (t *task) main() error {
 		switch {
 		case t.args.shared:
 			for _, v := range in {
-				out = append(out, v...)
+				out = append(out, v)
 			}
 			f, err := os.Create(fn)
 			if err != nil {
@@ -552,7 +552,8 @@ func (t *task) main() error {
 			_, err = out.WriteTo(f)
 			return err
 		case t.args.lib:
-			out, err = ir.LinkLib(in...)
+			o, err = ir.LinkLib(in...)
+			out = ir.Objects{o}
 		default:
 			for _, v := range in {
 				for _, o := range v {
@@ -561,13 +562,18 @@ func (t *task) main() error {
 					}
 				}
 			}
-			out, err = ir.LinkMain(in...)
+			o, err = ir.LinkMain(in...)
+			out = ir.Objects{o}
 		}
 		if err != nil {
 			return err
 		}
 
-		bin, err := virtual.LoadMain(out)
+		if len(out) != 1 {
+			panic("internal error")
+		}
+
+		bin, err := virtual.LoadMain(out[0])
 		if err != nil {
 			return err
 		}

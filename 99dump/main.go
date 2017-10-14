@@ -216,13 +216,15 @@ func try(w io.Writer, fn string, bin bool) bool {
 
 		fmt.Fprintf(w, "%T %s:\n", o, fn)
 		for i, v := range o {
-			switch x := v.(type) {
-			case *ir.DataDefinition:
-				fmt.Fprintf(w, "# [%v]: %T %v %v\n", i, x, x.ObjectBase, x.Value)
-			case *ir.FunctionDefinition:
-				fmt.Fprintf(w, "# [%v]: %T %v %v\n", i, x, x.ObjectBase, x.Arguments)
-				for i, v := range x.Body {
-					fmt.Fprintf(w, "%#05x\t%v\n", i, v)
+			for j, v := range v {
+				switch x := v.(type) {
+				case *ir.DataDefinition:
+					fmt.Fprintf(w, "# [%v, %v]: %T %v %v\n", i, j, x, x.ObjectBase, x.Value)
+				case *ir.FunctionDefinition:
+					fmt.Fprintf(w, "# [%v, %v]: %T %v %v\n", i, j, x, x.ObjectBase, x.Arguments)
+					for i, v := range x.Body {
+						fmt.Fprintf(w, "%#05x\t%v\n", i, v)
+					}
 				}
 			}
 		}

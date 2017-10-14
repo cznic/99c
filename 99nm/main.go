@@ -234,28 +234,33 @@ func try(w io.Writer, fn string, bin bool) bool {
 			return false
 		}
 
-		m := map[string][]ir.Object{}
-		for _, v := range o {
-			k := string(xc.Dict.S(int(v.Base().NameID)))
-			a = append(a, k)
-			m[k] = append(m[k], v)
-		}
-		sort.Strings(a)
-		for _, k := range a {
-			for _, v := range m[k] {
-				if v.Base().Linkage == ir.InternalLinkage {
-					continue
-				}
+		for i, v := range o {
+			if len(o) != 1 {
+				fmt.Fprintf(w, "#%v\n", i)
+			}
+			a = a[:0]
+			m := map[string][]ir.Object{}
+			for _, v := range v {
+				k := string(xc.Dict.S(int(v.Base().NameID)))
+				a = append(a, k)
+				m[k] = append(m[k], v)
+			}
+			sort.Strings(a)
+			for _, k := range a {
+				for _, v := range m[k] {
+					if v.Base().Linkage == ir.InternalLinkage {
+						continue
+					}
 
-				switch x := v.(type) {
-				case *ir.DataDefinition:
-					fmt.Fprintf(w, "%s\t%v\n", k, x.TypeID)
-				case *ir.FunctionDefinition:
-					fmt.Fprintf(w, "%s\t%v\n", k, x.TypeID)
+					switch x := v.(type) {
+					case *ir.DataDefinition:
+						fmt.Fprintf(w, "%s\t%v\n", k, x.TypeID)
+					case *ir.FunctionDefinition:
+						fmt.Fprintf(w, "%s\t%v\n", k, x.TypeID)
+					}
 				}
 			}
 		}
-
 	}
 	return true
 }
