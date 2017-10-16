@@ -37,11 +37,10 @@ editor:
 	gofmt -l -s -w *.go
 	go test -i
 	go test
-	go install 
 	go install -tags virtual.profile ./99prof
 	go install -tags virtual.strace ./99strace
 	go install -tags virtual.trace ./99trace
-	go install ./99dump ./99nm ./99run
+	go install ./ ./99dump ./99nm ./99run
 
 internalError:
 	egrep -ho '"internal error.*"' *.go | sort | cat -n

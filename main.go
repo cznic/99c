@@ -23,6 +23,7 @@ import (
 	"github.com/cznic/cc"
 	"github.com/cznic/ccir"
 	"github.com/cznic/ir"
+	"github.com/cznic/strutil"
 	"github.com/cznic/virtual"
 	"github.com/cznic/xc"
 )
@@ -40,6 +41,7 @@ func main() {
 	if s := os.Getenv("DIAG99C"); strings.Contains(","+s+",", ",os-args,") {
 		fmt.Fprintf(os.Stderr, "%v\n", os.Args)
 	}
+
 	defer func() {
 		if err := recover(); err != nil {
 			exit(1, "PANIC: %v\n%s", err, debug.Stack())
@@ -331,6 +333,17 @@ func fatalError(msg string, arg ...interface{}) error {
 func newTask() *task { return &task{} }
 
 func (t *task) main() error {
+	if h := strutil.Homepath(); h != "" {
+		p := filepath.Join(h, ".99c")
+		fi, err := os.Stat(p)
+		if err == nil {
+			if fi.IsDir() {
+				t.args.I = append(t.args.I, filepath.Join(p, "include"))
+				t.args.L = append(t.args.I, filepath.Join(p, "lib"))
+			}
+		}
+	}
+
 	if len(t.args.args) == 0 {
 		return fatalError("no input files")
 	}
