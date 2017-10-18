@@ -679,8 +679,8 @@ A bare bones example, currently supported only on Linux.
     $ cd examples/xcb/
     /home/jnml/src/github.com/cznic/99c/examples/xcb
     $ ls
-    main.c
-    $ cat main.c 
+    screen.c
+    $ cat screen.c 
     // +build ignore
     
     // src: https://xcb.freedesktop.org/tutorial/
@@ -720,7 +720,7 @@ A bare bones example, currently supported only on Linux.
     
     	return 0;
     }
-    $ 99c main.c -lxcb && ./a.out
+    $ 99c screen.c -lxcb && ./a.out
     
     Informations of screen 927:
       width.........: 1920

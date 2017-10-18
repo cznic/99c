@@ -637,8 +637,8 @@
 //     $ cd examples/xcb/
 //     /home/jnml/src/github.com/cznic/99c/examples/xcb
 //     $ ls
-//     main.c
-//     $ cat main.c
+//     screen.c
+//     $ cat screen.c
 //     // +build ignore
 //
 //     // src: https://xcb.freedesktop.org/tutorial/
@@ -678,7 +678,7 @@
 //
 //     	return 0;
 //     }
-//     $ 99c main.c -lxcb && ./a.out
+//     $ 99c screen.c -lxcb && ./a.out
 //
 //     Informations of screen 927:
 //       width.........: 1920
