@@ -353,7 +353,14 @@ func (t *task) main() error {
 	}
 
 	lsearch := append([]string{"."}, t.args.L...)
-	for _, v := range t.args.l {
+	lm := map[string]struct{}{}
+	for i := 0; i < len(t.args.l); i++ {
+		v := t.args.l[i]
+		if _, ok := lm[v]; ok {
+			continue
+		}
+
+		lm[v] = struct{}{}
 		for _, d := range lsearch {
 			fn := filepath.Join(d, fmt.Sprintf("lib%s.so", v))
 			_, err := os.Stat(fn)
@@ -366,6 +373,19 @@ func (t *task) main() error {
 			}
 
 			t.ofiles = append(t.ofiles, fn)
+			la := fn[:len(fn)-len(filepath.Ext(fn))] + ".la"
+			c, err := newLibToolConfigFile(la)
+			if err != nil {
+				return fatalError("%v", err)
+			}
+
+			deps, err := c.dependencyLibs()
+			if err != nil {
+				return fatalError("%s: %v", la, err)
+			}
+
+			t.args.l = append(t.args.l, deps...)
+			break
 		}
 	}
 

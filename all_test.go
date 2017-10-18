@@ -126,3 +126,19 @@ func TestIssue4(t *testing.T) {
 		t.Fatalf("fib symbol missing: %v", bin.Sym)
 	}
 }
+
+func TestLibToolConfig(t *testing.T) {
+	m, err := filepath.Glob(filepath.Join("testdata", "*.la"))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	for _, v := range m {
+		c, err := newLibToolConfigFile(v)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		t.Logf("%s: %#v", v, c)
+	}
+}
