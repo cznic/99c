@@ -601,6 +601,17 @@ func (t *task) main() error {
 			f.WriteString("#!/usr/bin/env 99run\n")
 		}
 
+		if !t.args.g {
+			bin.Functions = nil
+			bin.Lines = nil
+			if !t.args.lib {
+				start, ok := bin.LookupFunction("_start")
+				bin.Sym = nil
+				if ok {
+					bin.Sym = map[ir.NameID]int{ir.NameID(xc.Dict.SID("_start")): start}
+				}
+			}
+		}
 		if _, err := bin.WriteTo(f); err != nil {
 			return err
 		}

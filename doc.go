@@ -32,7 +32,7 @@
 //             Ignored.
 //       -c    Suppress the link-edit phase of the compilation, and do not
 //             remove any object files that are produced.
-//       -g    Produce debugging information, ignored.
+//       -g    Produce debugging information.
 //       -l<name>
 //             Link with lib<name>.
 //       -o pathname
@@ -101,6 +101,12 @@
 // Changelog
 //
 // 2017-10-07: Initial public release.
+//
+// 2017-10-18: The -g flag is no more ignored. Add the -g flag to have the
+// symbol and line information included in the executable. Without using -g
+// some tools may not work and stack traces will not be really useful. The
+// advantage of not including the additional info by default are substantially
+// smaller executables.
 //
 // Supported platforms and operating systems
 //

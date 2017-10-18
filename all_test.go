@@ -116,6 +116,7 @@ func TestIssue4(t *testing.T) {
 	var bin *virtual.Binary
 	j = newTask()
 	j.args.args = []string{objf}
+	j.args.g = true
 	j.args.hooks.bin = &bin
 	if err := j.main(); err != nil {
 		t.Fatal(err)
