@@ -19,7 +19,7 @@
      1. Loading C plugins at run-time
      1. Inserting defines
      1. Specifying include paths
-     1. Install C packages
+     1. Installing C packages
 1. [99run](#99run)
      1. Usage
      1. Installation
@@ -658,7 +658,7 @@ The -I flag defines additional include files search path(s).
 
 ### Installing C packages
 
-To use a C package with programs compiled with 99c it's necessary to install a 99c version of the package. The lib directory contains some such installers. For example
+To use a C package with programs compiled by 99c it's necessary to install a 99c version of the package. The lib directory contains some such installers. For example
 
     $ cd lib/xcb
     $ go generate
