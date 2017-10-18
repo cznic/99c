@@ -34,7 +34,7 @@ edit:
 editor:
 	find -name \*.c -or -name \*.h | xargs -n1 indent -linux -l -1
 	find -name \*.c~ -or -name \*.h~ | xargs rm
-	gofmt -l -s -w *.go
+	gofmt -l -s -w .
 	go test -i
 	go test
 	go install -tags virtual.profile ./99prof

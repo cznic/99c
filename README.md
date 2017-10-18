@@ -19,6 +19,7 @@
      1. Loading C plugins at run-time
      1. Inserting defines
      1. Specifying include paths
+     1. Install C packages
 1. [99run](#99run)
      1. Usage
      1. Installation
@@ -150,9 +151,11 @@ Online documentation: [godoc.org/github.com/cznic/99c](http://godoc.org/github.c
 
 ### Changelog
 
-2017-10-07: Initial public release.
+2017-10-18: Initial support for using C packages.
 
 2017-10-18: The -g flag is no more ignored. Add the -g flag to have the symbol and line information included in the executable. Without using -g some tools may not work and stack traces will not be really useful. The advantage of not including the additional info by default are substantially smaller executables.
+
+2017-10-07: Initial public release.
 
 ### Supported platforms and operating systems
 
@@ -652,6 +655,19 @@ The -I flag defines additional include files search path(s).
     $ 99c -Ifoo main.c && ./a.out
     hello
     $
+
+### Installing C packages
+
+To use a C package with programs compiled with 99c it's necessary to install a 99c version of the package. The lib directory contains some such installers. For example
+
+    $ cd lib/xcb
+    $ go generate
+
+or equivalently
+
+    $ go generate github.com/cznic/99c/lib/xcb
+
+will install the 99c version of libxcb on your system in '$HOME/.99c'. Currently supported only on Linux.
 
 # 99run
 

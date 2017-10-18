@@ -100,13 +100,15 @@
 //
 // Changelog
 //
-// 2017-10-07: Initial public release.
-//
+// 2017-10-18: Initial support for using C packages.
+// 
 // 2017-10-18: The -g flag is no more ignored. Add the -g flag to have the
 // symbol and line information included in the executable. Without using -g
 // some tools may not work and stack traces will not be really useful. The
 // advantage of not including the additional info by default are substantially
 // smaller executables.
+// 
+// 2017-10-07: Initial public release.
 //
 // Supported platforms and operating systems
 //
