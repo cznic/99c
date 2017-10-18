@@ -7,6 +7,7 @@
 //go:generate go install -tags virtual.strace ./99strace
 //go:generate go install -tags virtual.trace ./99trace
 //go:generate go install ./99dump ./99nm ./99run
+
 package main
 
 import (
