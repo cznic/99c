@@ -37,9 +37,10 @@
 //
 // Profile a fibonacci program.
 //
-//     $ cd ../examples/prof/
+//     $ cd examples/prof/
+//     /home/jnml/src/github.com/cznic/99c/examples/prof
 //     $ ls *
-//     fib.c
+//     bogomips.c  fib.c
 //     $ cat fib.c
 //     #include <stdlib.h>
 //     #include <stdio.h>
@@ -67,37 +68,37 @@
 //
 //     	printf("%i\n", fib(n));
 //     }
-//     $ 99c fib.c && 99prof -functions -lines -instructions a.out 31 2>log
-//     1346269
+//     $ 99c fib.c -g && 99prof -functions -lines -instructions a.out 32 2>log
+//     2178309
 //     $ cat log
-//     # [99prof -functions -lines -instructions a.out 31] 781.384628ms, 72.483 MIPS
+//     # [99prof -functions -lines -instructions a.out 32] 1.109159422s, 82.621 MIPS
 //     # functions
-//     fib   	     56636    100.00%    100.00%
+//     fib   	     91639    100.00%    100.00%
 //     _start	         1      0.00%    100.00%
 //     # lines
-//     fib.c:11:	     32707     57.75%     57.75%
-//     fib.c:5:	      8738     15.43%     73.18%
-//     fib.c:4:	      4350      7.68%     80.86%
-//     fib.c:9:	      4002      7.07%     87.92%
-//     fib.c:7:	      2476      4.37%     92.29%
-//     fib.c:10:	      2184      3.86%     96.15%
-//     fib.c:8:	      1357      2.40%     98.55%
-//     fib.c:6:	       822      1.45%    100.00%
+//     fib.c:12:	     52722     57.53%     57.53%
+//     fib.c:6:	     14133     15.42%     72.95%
+//     fib.c:5:	      7125      7.77%     80.73%
+//     fib.c:10:	      6611      7.21%     87.94%
+//     fib.c:8:	      4076      4.45%     92.39%
+//     fib.c:11:	      3528      3.85%     96.24%
+//     fib.c:9:	      2127      2.32%     98.56%
+//     fib.c:7:	      1317      1.44%    100.00%
 //     /home/jnml/src/github.com/cznic/ccir/libc/crt0.c:13:	         1      0.00%    100.00%
 //     # instructions
-//     Argument32      8796     15.53%	     15.53%
-//     Push32          5601      9.89%	     25.42%
-//     AddSP           4426      7.81%	     33.23%
-//     Return          4413      7.79%	     41.03%
-//     SubI32          4375      7.72%	     48.75%
-//     AP              4363      7.70%	     56.45%
-//     Arguments       4359      7.70%	     64.15%
-//     Func            4351      7.68%	     71.83%
-//     Call            4346      7.67%	     79.51%
-//     SwitchI32       4331      7.65%	     87.15%
-//     Store32         4283      7.56%	     94.72%
-//     AddI32          2187      3.86%	     98.58%
-//     Zero32           806      1.42%	    100.00%
+//     Argument32     14175     15.47%	     15.47%
+//     Push32          9240     10.08%	     25.55%
+//     Func            7126      7.78%	     33.33%
+//     Call            7100      7.75%	     41.07%
+//     Return          7084      7.73%	     48.81%
+//     AddSP           7040      7.68%	     56.49%
+//     SwitchI32       7019      7.66%	     64.15%
+//     SubI32          7003      7.64%	     71.79%
+//     Store32         7002      7.64%	     79.43%
+//     AP              6972      7.61%	     87.04%
+//     Arguments       6968      7.60%	     94.64%
+//     AddI32          3528      3.85%	     98.49%
+//     Zero32          1383      1.51%	    100.00%
 //     $
 //
 // Bogomips
@@ -131,21 +132,18 @@
 //
 //     	delay_loop(n);
 //     }
-//     $ 99c bogomips.c && 99prof -functions a.out 9900000
-//     # [99prof -functions a.out 9900000] 999.017618ms, 79.279 MIPS
+//     # [99prof -functions a.out 11370000] 996.425292ms, 91.287 MIPS
 //     # functions
-//     delay_loop	     79200    100.00%    100.00%
+//     delay_loop	     90960    100.00%    100.00%
 //     _start    	         1      0.00%    100.00%
-//     $ time ./a.out 34900000
+//     $ time ./a.out 36600000
 //
-//     real	0m1,001s
-//     user	0m0,996s
-//     sys	0m0,000s
+//     real	0m1,007s
+//     user	0m1,004s
+//     sys	0m0,004s
 //     $
 //
-// In both cases the program executes for ~1 second. 34900000/9900000 = 3.525
-// and that's the slowdown coefficient when running the binary under 99prof.
-// The bogomips value is thus ~279 MIPS on this machine.
+// In both cases the program executes for ~1 second. 36600000/113700000 = 3.219 and that's the slowdown coefficient when running the binary under 99prof. The bogomips value is thus ~293 MIPS on this machine.
 //
 //     $ 99dump a.out
 //     virtual.Binary a.out: code 0x0004d, text 0x00000, data 0x00030, bss 0x00020, pc2func 3, pc2line 23
@@ -259,9 +257,7 @@
 //     0x00014	function	main
 //     $
 //
-// Alternatively, using 99dump, we can see that the loop consists of 8
-// instructions at addresses 0x00044-0x0004b. 34900000*8 = 279200000 confirming
-// the estimated ~279 MIPS value.
+// Alternatively, using 99dump, we can see that the loop consists of 8 instructions at addresses 0x00044-0x0004b. 36600000*8 = 292800000 confirming the estimated ~293 MIPS value.
 package main
 
 import (
