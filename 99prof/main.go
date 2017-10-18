@@ -132,6 +132,7 @@
 //
 //     	delay_loop(n);
 //     }
+//     $ 99c bogomips.c -g && 99prof -functions a.out 11370000
 //     # [99prof -functions a.out 11370000] 996.425292ms, 91.287 MIPS
 //     # functions
 //     delay_loop	     90960    100.00%    100.00%
@@ -318,7 +319,7 @@ or
 		}
 	}
 
-	var opts []virtual.Option
+	opts := []virtual.Option{virtual.AttachProcessSignals()}
 	if *functions {
 		opts = append(opts, virtual.ProfileFunctions())
 	}

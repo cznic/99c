@@ -21,6 +21,7 @@
      1. Specifying include paths
      1. Installing C packages
      1. Talking to X server
+     1. Creating a X window
 1. [99run](#99run)
      1. Usage
      1. Installation
@@ -151,6 +152,8 @@ Use the -x flag to view the commands executed.
 Online documentation: [godoc.org/github.com/cznic/99c](http://godoc.org/github.com/cznic/99c)
 
 ### Changelog
+
+2017-10-18: Executables should be from now on no more tied to a single compatibility number but to a minimal compatibility number. No more permanent recompiling of everything.
 
 2017-10-18: Initial support for using C packages.
 
@@ -730,6 +733,70 @@ A bare bones example, currently supported only on Linux.
     
     $ 
 
+### Creating a X window
+
+This example will show a small 150x150 pixel window in the top left corner of the screen. The window content is not handled by this example, but it can be moved, resized and closed.
+
+    $ go generate ./lib/xcb ./lib/xau
+    ... lot of output
+    $ cd examples/xcb/
+    $ cat helloworld.c 
+    // +build ignore
+    
+    // src: https://www.x.org/releases/current/doc/libxcb/tutorial/index.html#helloworld
+    
+    #include <stdio.h>
+    #include <unistd.h>		/* pause() */
+    
+    #include <xcb/xcb.h>
+    
+    int main()
+    {
+    	xcb_connection_t *c;
+    	xcb_screen_t *screen;
+    	xcb_window_t win;
+    
+    	/* Open the connection to the X server */
+    	c = xcb_connect(NULL, NULL);
+    
+    	/* Get the first screen */
+    	xcb_screen_iterator_t iter = xcb_setup_roots_iterator(xcb_get_setup(c));	//TODO bug
+    	screen = iter.data;
+    
+    	/* Ask for our window's Id */
+    	win = xcb_generate_id(c);
+    
+    	/* Create the window */
+    	xcb_create_window(c,	/* Connection          */
+    			  XCB_COPY_FROM_PARENT,	/* depth (same as root) */
+    			  win,	/* window Id           */
+    			  screen->root,	/* parent window       */
+    			  0, 0,	/* x, y                */
+    			  150, 150,	/* width, height       */
+    			  10,	/* border_width        */
+    			  XCB_WINDOW_CLASS_INPUT_OUTPUT,	/* class               */
+    			  screen->root_visual,	/* visual              */
+    			  0, NULL);	/* masks, not used yet */
+    
+    	/* Map the window on the screen */
+    	xcb_map_window(c, win);
+    
+    	/* Make sure commands are sent before we pause, so window is shown */
+    	xcb_flush(c);
+    
+    	printf("Close the demo window and/or press ctrl-c while the terminal is focused to exit.\n");
+    	int i = pause();		/* hold client until Ctrl-C */
+    	printf("pause() returned %i\n", i);
+    
+    	return 0;
+    }
+    $ 99c helloworld.c -lxcb && ./a.out
+    Close the demo window and/or press ctrl-c while the terminal is focused to exit.
+    ... close the demo window (optional)
+    ... focus the terminal and press ctrl-c
+    ^Cpause() returned -1
+    $
+
 # 99run
 
 Command 99run executes binary programs produced by the 99c compiler.
@@ -1116,6 +1183,7 @@ Let's try to estimate the VM bogomips value on an older Intel® Core™ i5-4670 
     
     	delay_loop(n);
     }
+    $ 99c bogomips.c -g && 99prof -functions a.out 11370000
     # [99prof -functions a.out 11370000] 996.425292ms, 91.287 MIPS
     # functions
     delay_loop	     90960    100.00%    100.00%

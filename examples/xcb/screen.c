@@ -1,6 +1,6 @@
 // +build ignore
 
-// src: https://xcb.freedesktop.org/tutorial/
+// src: https://www.x.org/releases/current/doc/libxcb/tutorial/index.html#screen
 
 #include <stdio.h>
 #include <xcb/xcb.h>

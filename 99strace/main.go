@@ -111,7 +111,7 @@ or
 		exit(1, "%v\n", err)
 	}
 
-	code, err := virtual.Exec(&b, os.Args[1:], os.Stdin, os.Stdout, os.Stderr, 0, 8<<20, "")
+	code, err := virtual.Exec(&b, os.Args[1:], os.Stdin, os.Stdout, os.Stderr, 0, 8<<20, "", virtual.AttachProcessSignals())
 	if err != nil {
 		if code == 0 {
 			code = 1
