@@ -19,6 +19,8 @@ func archive(fn string) (ir.Objects, error) {
 		return nil, err
 	}
 
+	defer f.Close()
+
 	var a ir.Objects
 	r := ar.NewReader(bufio.NewReader(f))
 	for {
