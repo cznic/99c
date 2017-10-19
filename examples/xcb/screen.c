@@ -1,3 +1,5 @@
+// 99c screen.c -lxcb && ./a.out
+
 // +build ignore
 
 // src: https://www.x.org/releases/current/doc/libxcb/tutorial/index.html#screen

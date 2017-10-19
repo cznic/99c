@@ -760,8 +760,7 @@ This example will show a small 150x150 pixel window in the top left corner of th
     	c = xcb_connect(NULL, NULL);
     
     	/* Get the first screen */
-    	xcb_screen_iterator_t iter = xcb_setup_roots_iterator(xcb_get_setup(c));	//TODO bug
-    	screen = iter.data;
+    	screen = xcb_setup_roots_iterator(xcb_get_setup(c)).data;
     
     	/* Ask for our window's Id */
     	win = xcb_generate_id(c);
