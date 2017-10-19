@@ -68,21 +68,22 @@ type testHooks struct {
 }
 
 type args struct {
-	D      []string // -D
-	E      bool     // -E
-	I      []string // -I
-	L      []string // -L
-	O      string   // -O
-	W      string   // -W
-	args   []string // Non flag arguments in order of appearance.
-	c      bool     // -c
-	g      bool     // -g
-	hooks  testHooks
-	l      []string // -l
-	lib    bool     // -99lib
-	o      string   // -o
-	opts   []cc.Opt // cc flags
-	shared bool     // -shared
+	D        []string // -D
+	E        bool     // -E
+	I        []string // -I
+	L        []string // -L
+	O        string   // -O
+	W        string   // -W
+	args     []string // Non flag arguments in order of appearance.
+	c        bool     // -c
+	g        bool     // -g
+	hooks    testHooks
+	l        []string // -l
+	lib      bool     // -99lib
+	o        string   // -o
+	opts     []cc.Opt // cc flags
+	rdynamic bool     // -rdynamic
+	shared   bool     // -shared
 }
 
 func (a *args) extra(name string) cc.Opt {
@@ -218,6 +219,8 @@ func (a *args) getopt(args []string) {
 			// nop
 		case arg == "-pthread":
 			//TODO
+		case arg == "-rdynamic":
+			a.rdynamic = true
 		case arg == "-rpath":
 			if i+1 >= len(args) {
 				exit(2, "missing -rptah argument")
@@ -275,6 +278,8 @@ func (a *args) getopt(args []string) {
         Ignored.
   -pthread
         Ignored. (TODO)
+  -rdynamic
+        Ignored. (TODO)
   -rpath pathname
         Ignored. (TODO)
   -shared
@@ -323,6 +328,7 @@ func (a *args) getopt(args []string) {
 
 type task struct {
 	args   args
+	afiles []string
 	cfiles []string
 	ofiles []string
 }
@@ -392,6 +398,8 @@ func (t *task) main() error {
 
 	for _, arg := range t.args.args {
 		switch filepath.Ext(arg) {
+		case ".a":
+			t.afiles = append(t.afiles, arg)
 		case ".c", ".h":
 			t.cfiles = append(t.cfiles, arg)
 		case ".o", ".so":
@@ -469,6 +477,14 @@ func (t *task) main() error {
 		}
 
 		obj = append(obj, o...)
+	}
+	for _, fn := range t.afiles {
+		a, err := archive(fn)
+		if err != nil {
+			return fatalError("%v", err)
+		}
+
+		obj = append(obj, a...)
 	}
 
 	switch {

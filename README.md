@@ -96,6 +96,8 @@ Output of 99c -h
             Ignored.
       -pthread
             Ignored. (TODO)
+      -rdynamic
+            Ignored. (TODO)
       -rpath pathname
             Ignored. (TODO)
       -shared
@@ -135,7 +137,7 @@ Output of 99c -h
             WideEnumValues
 
 
-Rest of the input is a list of file names, either C (.c) files or object (.o) files.
+Rest of the input is a list of file names, either C (.c) files or object (.o, .a) files.
 
 ### Installation
 
@@ -152,6 +154,8 @@ Use the -x flag to view the commands executed.
 Online documentation: [godoc.org/github.com/cznic/99c](http://godoc.org/github.com/cznic/99c)
 
 ### Changelog
+
+2017-10-19: Handle ar files (.a).
 
 2017-10-18: Executables should be from now on no more tied to a single compatibility number but to a minimal compatibility number. No more permanent recompiling of everything.
 
