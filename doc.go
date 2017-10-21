@@ -60,7 +60,6 @@
 //             BuiltinClassifyType
 //             BuiltinConstantP
 //             ComputedGotos
-//             DefineOmitCommaBeforeDDD
 //             DlrInIdentifiers
 //             EmptyDeclarations
 //             EmptyDefine

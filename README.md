@@ -113,7 +113,6 @@ Output of 99c -h
             BuiltinClassifyType
             BuiltinConstantP
             ComputedGotos
-            DefineOmitCommaBeforeDDD
             DlrInIdentifiers
             EmptyDeclarations
             EmptyDefine

@@ -319,7 +319,7 @@ or
 		}
 	}
 
-	opts := []virtual.Option{virtual.AttachProcessSignals()}
+	var opts []virtual.Option
 	if *functions {
 		opts = append(opts, virtual.ProfileFunctions())
 	}

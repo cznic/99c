@@ -102,8 +102,6 @@ func (a *args) extra(name string) cc.Opt {
 		return cc.EnableBuiltinConstantP()
 	case "ComputedGotos":
 		return cc.EnableComputedGotos()
-	case "DefineOmitCommaBeforeDDD":
-		return cc.EnableDefineOmitCommaBeforeDDD()
 	case "DlrInIdentifiers":
 		return cc.EnableDlrInIdentifiers()
 	case "EmptyDeclarations":
@@ -295,7 +293,6 @@ func (a *args) getopt(args []string) {
         BuiltinClassifyType
         BuiltinConstantP
         ComputedGotos
-        DefineOmitCommaBeforeDDD
         DlrInIdentifiers
         EmptyDeclarations
         EmptyDefine
@@ -337,17 +334,112 @@ func fatalError(msg string, arg ...interface{}) error {
 	return fmt.Errorf("fatal error: %s", fmt.Sprintf(msg, arg...))
 }
 
+func clean(a []string) (r []string) {
+	m := map[string]struct{}{}
+	for _, v := range a {
+		if _, ok := m[v]; !ok {
+			r = append(r, v)
+			m[v] = struct{}{}
+		}
+	}
+	return r
+}
+
+func join(a ...interface{}) (r []string) {
+	for _, v := range a {
+		switch x := v.(type) {
+		case string:
+			r = append(r, x)
+		case []string:
+			r = append(r, x...)
+		default:
+			panic("internal error")
+		}
+	}
+	return clean(r)
+}
+
 func newTask() *task { return &task{} }
 
 func (t *task) main() error {
+	// -I dir
+	// -iquote dir
+	// -isystem dir
+	// -idirafter dir
+	//
+	// Add the directory dir to the list of directories to be searched for
+	// header files during preprocessing. See Search Path. If dir begins
+	// with ‘=’ or $SYSROOT, then the ‘=’ or $SYSROOT is replaced by the
+	// sysroot prefix; see --sysroot and -isysroot.
+	//
+	// Directories specified with -iquote apply only to the quote form of
+	// the directive, #include "file". Directories specified with -I,
+	// -isystem, or -idirafter apply to lookup for both the #include "file"
+	// and #include <file> directives.
+	//
+	// You can specify any number or combination of these options on the
+	// command line to search for header files in several directories. The
+	// lookup order is as follows:
+	//
+	// 1. For the quote form of the include directive, the directory of the
+	// current file is searched first.
+	//
+	// 2. For the quote form of the include directive, the directories
+	// specified by -iquote options are searched in left-to-right order, as
+	// they appear on the command line.
+	//
+	// 3. Directories specified with -I options are scanned in
+	// left-to-right order.
+	//
+	// 4. Directories specified with -isystem options are scanned in
+	// left-to-right order.
+	//
+	// 5. Standard system directories are scanned.
+	//
+	// 6. Directories specified with -idirafter options are scanned in
+	// left-to-right order.
+	//
+	// You can use -I to override a system header file, substituting your
+	// own version, since these directories are searched before the
+	// standard system header file directories.  However, you should not
+	// use this option to add directories that contain vendor-supplied
+	// system header files; use -isystem for that.
+	//
+	// The -isystem and -idirafter options also mark the directory as a
+	// system directory, so that it gets the same special treatment that is
+	// applied to the standard system directories. See System Headers.
+	//
+	// If a standard system include directory, or a directory specified
+	// with -isystem, is also specified with -I, the -I option is ignored.
+	// The directory is still searched but as a system directory at its
+	// normal position in the system include chain. This is to ensure that
+	// GCC’s procedure to fix buggy system headers and the ordering for the
+	// #include_next directive are not inadvertently changed. If you really
+	// need to change the search order for system directories, use the
+	// -nostdinc and/or -isystem options. See System Headers.
+	//
+	// src: https://gcc.gnu.org/onlinedocs/cpp/Invocation.html#Invocation
+	includes := join(
+		"@", // 1.
+		//TODO 2.
+		t.args.I, // 3.
+		//TODO 4.
+		ccir.LibcIncludePath, // 5.
+		//TODO 6.
+	)
+	sysIncludes := join(
+		t.args.I, // 3.
+		//TODO 4.
+		ccir.LibcIncludePath, // 5.
+		//TODO 6.
+	)
+
 	if h := strutil.Homepath(); h != "" {
 		p := filepath.Join(h, ".99c")
 		fi, err := os.Stat(p)
-		if err == nil {
-			if fi.IsDir() {
-				t.args.I = append(t.args.I, filepath.Join(p, "include"))
-				t.args.L = append(t.args.I, filepath.Join(p, "lib"))
-			}
+		if err == nil && fi.IsDir() {
+			sysIncludes = append(includes, filepath.Join(p, "include"))
+			t.args.L = append(t.args.I, filepath.Join(p, "lib"))
 		}
 	}
 
@@ -428,9 +520,11 @@ func (t *task) main() error {
 
 		var lpos token.Position
 		opts := []cc.Opt{
-			cc.IncludePaths(t.args.I),
-			cc.SysIncludePaths([]string{ccir.LibcIncludePath}),
+			cc.Mode99c(),
+			cc.IncludePaths(includes),
+			cc.SysIncludePaths(sysIncludes),
 			cc.AllowCompatibleTypedefRedefinitions(),
+			cc.EnableDefineOmitCommaBeforeDDD(),
 			cc.Cpp(func(toks []xc.Token) {
 				if len(toks) != 0 {
 					p := toks[0].Position()
@@ -501,9 +595,11 @@ func (t *task) main() error {
 			}
 
 			opts := []cc.Opt{
-				cc.IncludePaths(t.args.I),
-				cc.SysIncludePaths([]string{ccir.LibcIncludePath}),
+				cc.Mode99c(),
+				cc.IncludePaths(includes),
+				cc.SysIncludePaths(sysIncludes),
 				cc.AllowCompatibleTypedefRedefinitions(),
+				cc.EnableDefineOmitCommaBeforeDDD(),
 			}
 			opts = append(opts, t.args.opts...)
 
@@ -561,9 +657,11 @@ func (t *task) main() error {
 		}
 
 		opts := []cc.Opt{
-			cc.IncludePaths(t.args.I),
-			cc.SysIncludePaths([]string{ccir.LibcIncludePath}),
+			cc.Mode99c(),
+			cc.IncludePaths(includes),
+			cc.SysIncludePaths(sysIncludes),
 			cc.AllowCompatibleTypedefRedefinitions(),
+			cc.EnableDefineOmitCommaBeforeDDD(),
 		}
 		opts = append(opts, t.args.opts...)
 
