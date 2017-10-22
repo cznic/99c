@@ -503,15 +503,11 @@ func (t *task) main() error {
 
 	switch {
 	case t.args.E:
-		model, err := ccir.NewModel()
-		if err != nil {
-			fatalError("%v", err)
-		}
-
 		o := os.Stdout
 		if fn := t.args.o; fn != "" {
+			var err error
 			if o, err = os.Create(fn); err != nil {
-				fatalError("%v", err)
+				return fatalError("%v", err)
 			}
 		}
 		out := bufio.NewWriter(o)
@@ -542,19 +538,27 @@ func (t *task) main() error {
 			}),
 		}
 		opts = append(opts, t.args.opts...)
+		for _, v := range t.cfiles {
+			model, err := ccir.NewModel()
+			if err != nil {
+				return fatalError("%v", err)
+			}
 
-		_, err = cc.Parse(
-			fmt.Sprintf(`
+			if _, err := cc.Parse(
+				fmt.Sprintf(`
 %s
 #define __arch__ %s
 #define __os__ %s
 #include <builtin.h>
 `, strings.Join(t.args.D, "\n"), runtime.GOARCH, runtime.GOOS),
-			t.cfiles,
-			model,
-			opts...,
-		)
-		return err
+				[]string{v},
+				model,
+				opts...,
+			); err != nil {
+				return err
+			}
+		}
+		return nil
 	}
 
 	var obj ir.Objects
@@ -583,20 +587,19 @@ func (t *task) main() error {
 
 	switch {
 	case t.args.c:
+		opts := []cc.Opt{
+			cc.Mode99c(),
+			cc.IncludePaths(includes),
+			cc.SysIncludePaths(sysIncludes),
+			cc.AllowCompatibleTypedefRedefinitions(),
+			cc.EnableDefineOmitCommaBeforeDDD(),
+		}
+		opts = append(opts, t.args.opts...)
 		for _, arg := range t.cfiles {
 			model, err := ccir.NewModel()
 			if err != nil {
-				fatalError("%v", err)
+				return fatalError("%v", err)
 			}
-
-			opts := []cc.Opt{
-				cc.Mode99c(),
-				cc.IncludePaths(includes),
-				cc.SysIncludePaths(sysIncludes),
-				cc.AllowCompatibleTypedefRedefinitions(),
-				cc.EnableDefineOmitCommaBeforeDDD(),
-			}
-			opts = append(opts, t.args.opts...)
 
 			tu, err := cc.Parse(
 				fmt.Sprintf(`
@@ -646,11 +649,6 @@ func (t *task) main() error {
 		if fn == "" {
 			fn = "a.out"
 		}
-		model, err := ccir.NewModel()
-		if err != nil {
-			fatalError("%v", err)
-		}
-
 		opts := []cc.Opt{
 			cc.Mode99c(),
 			cc.IncludePaths(includes),
@@ -660,31 +658,39 @@ func (t *task) main() error {
 		}
 		opts = append(opts, t.args.opts...)
 
-		tu, err := cc.Parse(
-			fmt.Sprintf(`
+		for _, v := range append(t.cfiles, ccir.CRT0Path) {
+			model, err := ccir.NewModel()
+			if err != nil {
+				return fatalError("%v", err)
+			}
+
+			tu, err := cc.Parse(
+				fmt.Sprintf(`
 %s
 #define __arch__ %s
 #define __os__ %s
 #include <builtin.h>
 `, strings.Join(t.args.D, "\n"), runtime.GOARCH, runtime.GOOS),
-			append(t.cfiles, ccir.CRT0Path),
-			model,
-			opts...,
-		)
-		if err != nil {
-			return err
-		}
+				[]string{v},
+				model,
+				opts...,
+			)
+			if err != nil {
+				return err
+			}
 
-		o, err := ccir.New(tu)
-		if err != nil {
-			return err
+			o, err := ccir.New(tu)
+			if err != nil {
+				return err
+			}
+
+			obj = append(obj, o)
 		}
 
 		var out ir.Objects
-		in := append(obj, o)
 		switch {
 		case t.args.shared:
-			out = append(out, in...)
+			out = append(out, obj...)
 			f, err := os.Create(fn)
 			if err != nil {
 				return err
@@ -693,23 +699,27 @@ func (t *task) main() error {
 			_, err = out.WriteTo(f)
 			return err
 		case t.args.lib:
-			o, err = ir.LinkLib(in...)
+			o, err := ir.LinkLib(obj...)
+			if err != nil {
+				return err
+			}
+
 			out = ir.Objects{o}
 		default:
-			for _, v := range in {
+			for _, v := range obj {
 				for _, o := range v {
 					if err := o.Verify(); err != nil {
 						return err
 					}
 				}
 			}
-			o, err = ir.LinkMain(in...)
+			o, err := ir.LinkMain(obj...)
+			if err != nil {
+				return err
+			}
+
 			out = ir.Objects{o}
 		}
-		if err != nil {
-			return err
-		}
-
 		if len(out) != 1 {
 			panic("internal error")
 		}

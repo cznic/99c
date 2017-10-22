@@ -317,7 +317,7 @@ source code lines.
     int main() {
     	f(4);
     }
-    $ 99c stack.c && ./a.out
+    $ 99c stack.c -g && ./a.out
     panic: runtime error: invalid memory address or nil pointer dereference [recovered]
     	panic: runtime error: invalid memory address or nil pointer dereference
     stack.c.f(0x0)
@@ -1354,7 +1354,7 @@ Online documentation: [godoc.org/github.com/cznic/99c/99nm](http://godoc.org/git
     int main()
     {
     }
-    $ 99c foo.c && 99nm a.out
+    $ 99c foo.c -g && 99nm a.out
     0x00012	__builtin_exit
     0x0000f	__register_stdfiles
     0x00000	_start

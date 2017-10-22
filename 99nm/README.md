@@ -46,7 +46,7 @@ Online documentation: [godoc.org/github.com/cznic/99c/99nm](http://godoc.org/git
     int main()
     {
     }
-    $ 99c foo.c && 99nm a.out
+    $ 99c foo.c -g && 99nm a.out
     0x00012	__builtin_exit
     0x0000f	__register_stdfiles
     0x00000	_start
