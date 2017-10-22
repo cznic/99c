@@ -420,28 +420,28 @@ func (t *task) main() error {
 	//
 	// src: https://gcc.gnu.org/onlinedocs/cpp/Invocation.html#Invocation
 	includes := join(
-		"@", // 1.
-		//TODO 2.
-		t.args.I, // 3.
-		//TODO 4.
+		"@",                  // 1.
+		t.args.I,             // 3.
 		ccir.LibcIncludePath, // 5.
-		//TODO 6.
 	)
+
+	// GCC order of items would be 3., 5.
 	sysIncludes := join(
-		t.args.I, // 3.
-		//TODO 4.
 		ccir.LibcIncludePath, // 5.
-		//TODO 6.
+		t.args.I,             // 3.
 	)
 
 	if h := strutil.Homepath(); h != "" {
 		p := filepath.Join(h, ".99c")
 		fi, err := os.Stat(p)
 		if err == nil && fi.IsDir() {
-			sysIncludes = append(includes, filepath.Join(p, "include"))
+			sysIncludes = append(sysIncludes, filepath.Join(p, "include"))
 			t.args.L = append(t.args.I, filepath.Join(p, "lib"))
 		}
 	}
+
+	//TODO- fmt.Println("includes", includes)
+	//TODO- fmt.Println("sysIncludes", sysIncludes)
 
 	if len(t.args.args) == 0 {
 		return fatalError("no input files")
@@ -583,11 +583,6 @@ func (t *task) main() error {
 
 	switch {
 	case t.args.c:
-		wd, err := os.Getwd()
-		if err != nil {
-			return err
-		}
-
 		for _, arg := range t.cfiles {
 			model, err := ccir.NewModel()
 			if err != nil {
@@ -626,7 +621,7 @@ func (t *task) main() error {
 			if p := t.args.hooks.obj; p != nil {
 				*p = ir.Objects{o}
 			}
-			fn := filepath.Join(wd, filepath.Base(arg[:len(arg)-len(filepath.Ext(arg))])+".o")
+			fn := filepath.Base(arg[:len(arg)-len(filepath.Ext(arg))]) + ".o"
 			f, err := os.Create(fn)
 			if err != nil {
 				return err
